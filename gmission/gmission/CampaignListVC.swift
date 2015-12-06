@@ -106,6 +106,8 @@ class CampaignListVC: EnhancedVC {
 //        }
         
         binder.refreshTableContent()
+        
+        EnhancedVC.showModalLoginView()
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {

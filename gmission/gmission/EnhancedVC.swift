@@ -26,9 +26,26 @@ class EnhancedVC: UIViewController {
     }
     
     static func showModalLoginView(){
-        
+        let loginVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewControllerWithIdentifier("LoginVC")
+        topViewController()?.presentViewController(loginVC, animated: true, completion: { () -> Void in
+            print("pop out loginVC")
+        })
     }
     
+    class func topViewController(base: UIViewController? = UIApplication.sharedApplication().keyWindow?.rootViewController) -> UIViewController? {
+        if let nav = base as? UINavigationController {
+            return topViewController(nav.visibleViewController)
+        }
+        if let tab = base as? UITabBarController {
+            if let selected = tab.selectedViewController {
+                return topViewController(selected)
+            }
+        }
+        if let presented = base?.presentedViewController {
+            return topViewController(presented)
+        }
+        return base
+    }
 
     /*
     // MARK: - Navigation
