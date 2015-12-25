@@ -8,7 +8,38 @@
 
 import UIKit
 
-class LoginVC: EnhancedVC {
+
+class LoginVM{
+    static let global = LoginVM()
+    
+    var loginUsername:String!
+    var loginPassword:String!
+    func login(ok:F){
+        let paras = ["username":loginUsername, "password":loginPassword]
+        HTTP.requestJSON(.POST, "user/auth", paras: paras, onFail: nil) { (json) -> () in
+            print("login OK", json)
+            UserManager.global.afterLogin(self.loginUsername, pwd: self.loginPassword, tkn:json["token"].stringValue)
+            ok?()
+        }
+    }
+    
+    var regUsername:String!
+    var regPassword:String!
+    var regEmail:String!
+    func register(ok:F){
+        let paras = ["username":regUsername, "password":regPassword, "email":regEmail]
+        HTTP.requestJSON(.POST, "user/register", paras: paras, onFail: nil) { (json) -> () in
+            print("register OK", json)
+            self.loginUsername = self.regUsername
+            self.loginPassword = self.regPassword
+            self.login(ok)
+        }
+    }
+    
+}
+
+class LoginVC: EnhancedVC, UITextFieldDelegate {
+    let vm = LoginVM.global
     
     @IBOutlet weak var loginUsernameField: UITextField!
     @IBOutlet weak var loginPasswordField: UITextField!
@@ -17,14 +48,53 @@ class LoginVC: EnhancedVC {
     @IBOutlet weak var registerPasswordField: UITextField!
     
     @IBAction func loginBtnClicked(sender: AnyObject) {
+        vm.loginUsername = loginUsernameField.text
+        vm.loginPassword = loginPasswordField.text
+        vm.login { () -> Void in
+            self.dismissViewControllerAnimated(true, completion: nil)
+            print("loginVC removed")
+        }
     }
     
     @IBAction func registerBtnClicked(sender: AnyObject) {
+        vm.regUsername = registerUsernameField.text
+        vm.regPassword = registerPasswordField.text
+        vm.regEmail = registerEmailField.text
+        vm.register { () -> Void in
+            self.dismissViewControllerAnimated(true, completion: nil)
+            print("loginVC removed")
+        }
     }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Do any additional setup after loading the view.
+        let textFields = [loginUsernameField, loginPasswordField, registerEmailField, registerUsernameField, registerPasswordField]
+        let defaultTexts = ["zchenah", "123456", "zchenah@ust.hk", "zchenah", "123456"]
+        
+        zip(textFields, defaultTexts).forEach{$0.text = $1}
+        textFields.forEach{$0.delegate = self}
+    }
+    
+    func textFieldShouldReturn(textField: UITextField) -> Bool {
+        switch textField{
+        case loginUsernameField:
+            loginPasswordField.becomeFirstResponder()
+        case loginPasswordField:
+            loginBtnClicked(loginPasswordField)
+        case registerEmailField:
+            registerUsernameField.becomeFirstResponder()
+        case registerUsernameField:
+            registerPasswordField.becomeFirstResponder()
+        case registerPasswordField:
+            registerBtnClicked(registerPasswordField)
+        default: break
+        }
+        return false
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        loginUsernameField.becomeFirstResponder()
     }
     
     override func didReceiveMemoryWarning() {

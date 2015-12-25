@@ -19,6 +19,33 @@ class User{
 class UserManager{
     static let global = UserManager()
     
+    var token:String = ""
+    var username:String = ""
+    var password:String = ""
+    
+    func saveUserInfo(){
+        settings.save(username, forKey: "loginUsername")
+        settings.save(password, forKey: "loginPassword")
+        settings.save(token, forKey: "loginToken")
+    }
+    
+    func loadUserInfo(){
+        username = settings.load("loginUsername") ?? ""
+        password = settings.load("loginPassword") ?? ""
+        token = settings.load("loginToken") ?? ""
+    }
+    
+    func afterLogin(un:String, pwd:String, tkn:String){
+        username = un
+        password = pwd
+        token = tkn
+        saveUserInfo()
+    }
+    
+    init(){
+        loadUserInfo()
+    }
+    
 }
 
 

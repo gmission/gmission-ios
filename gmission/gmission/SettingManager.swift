@@ -24,4 +24,4 @@ class SettingManager{
     
 }
 
-let setttings = SettingManager.global
+let settings = SettingManager.global

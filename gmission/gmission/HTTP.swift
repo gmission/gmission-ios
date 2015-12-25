@@ -70,8 +70,9 @@ class HTTP{
     
     static func requestJSON(method: Alamofire.Method, _ url:String, paras:[String:AnyObject]?, onFail:OnFailFunc?, _ onSucceed:(JSON)->()) -> Request{
         var header = [String : String]()
-        if let saved_token = NSUserDefaults.standardUserDefaults().objectForKey("auth-token"){
-            header["Authorization"] = (saved_token as! String)
+        let token = UserManager.global.token
+        if token != ""{
+            header["Authorization"] = "gMission \(token)"
         }
         return newRequest(method, url, parameters: paras, headers:header, onFail:onFail).responseJSON{
             response in

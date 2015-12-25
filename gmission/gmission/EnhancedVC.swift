@@ -28,7 +28,7 @@ class EnhancedVC: UIViewController {
     static func showModalLoginView(){
         let loginVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewControllerWithIdentifier("LoginVC")
         topViewController()?.presentViewController(loginVC, animated: true, completion: { () -> Void in
-            print("pop out loginVC")
+            print("popped out loginVC")
         })
     }
     

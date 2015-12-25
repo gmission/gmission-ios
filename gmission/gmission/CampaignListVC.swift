@@ -18,11 +18,14 @@ class JsonEntity{
     class var urlname:String{
         return "name"
     }
+    class var restUrl:String{
+        return "rest/\(urlname)"
+    }
 
     // these restful function can be put anywhere..
     static func getAll<T:JsonEntity>(done:([T])->Void){
         
-        HTTP.requestJSON(.GET, T.urlname, paras: nil, onFail: nil){ (jsonRes) -> () in
+        HTTP.requestJSON(.GET, T.restUrl, paras: nil, onFail: nil){ (jsonRes) -> () in
             let tArray = jsonRes["objects"].arrayValue.map({ (json) -> T in
                 return T(jsonDict: json)
             })
@@ -31,7 +34,7 @@ class JsonEntity{
     }
     
     static func getOne<T:JsonEntity>(done:([T])->Void){
-        HTTP.requestJSON(.GET, T.urlname, paras: nil, onFail: nil){ (jsonRes) -> () in
+        HTTP.requestJSON(.GET, T.restUrl, paras: nil, onFail: nil){ (jsonRes) -> () in
             let tArray = jsonRes["objects"].arrayValue.map({ (json) -> T in
                 return T(jsonDict: json)
             })
@@ -40,7 +43,7 @@ class JsonEntity{
     }
     
     static func query<T:JsonEntity>(done:([T])->Void){
-        HTTP.requestJSON(.GET, T.urlname, paras: nil, onFail: nil){ (jsonRes) -> () in
+        HTTP.requestJSON(.GET, T.restUrl, paras: nil, onFail: nil){ (jsonRes) -> () in
             let tArray = jsonRes["objects"].arrayValue.map({ (json) -> T in
                 return T(jsonDict: json)
             })
