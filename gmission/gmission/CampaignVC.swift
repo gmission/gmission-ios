@@ -14,19 +14,23 @@ import SwiftyJSON
 class Hit:JsonEntity{
     override class var urlname:String{return "hit"}
     var title:String{return jsonDict["title"].stringValue}
+    var description:String{return jsonDict["description"].stringValue}
+    var type:String{return jsonDict["type"].stringValue}
 }
 
 class CampaignVM{
-    let campagin:Campaign
+    let campaign:Campaign
     let hits = ArrayForTableView<Hit>()
     
     init(c:Campaign){
-        campagin = c
+        campaign = c
     }
     
     func refresh(done:F = nil){
+        self.hits.removeAll()
         Hit.query{ (hits:[Hit])->Void in
             self.hits.appendContentsOf(hits)
+            done?()
         }
     }
 }
@@ -41,24 +45,31 @@ class CampaignVC: EnhancedVC {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        titleLabel.text = vm.campagin.title
+        titleLabel.text = vm.campaign.title
+        descriptionLabel.text = vm.campaign.description
         
-        tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
+//        tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
         binder.bind(tableView, items: vm.hits, refreshFunc: vm.refresh)
         binder.cellFunc = { indexPath in
-            let cell = self.tableView.dequeueReusableCellWithIdentifier("cell", forIndexPath: indexPath)
             let hit = self.vm.hits[indexPath.row]
+            let cellMapping = ["image":"imageCell", "selection":"selectionCell", "text":"textCell"]
+            let cellId = cellMapping[hit.type] ?? "imageCell"
+            let cell = self.tableView.dequeueReusableCellWithIdentifier(cellId, forIndexPath: indexPath)
             cell.textLabel?.text = hit.title
             return cell
         }
-        binder.selectionFunc = {indexPath in
-            self.gotoHitView(self.vm.hits[indexPath.row])
+        binder.refreshTableContent()
+        
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        print("segue of campaign -> hit")
+        if segue.identifier == "showHit"{
+            let hitVC: HitVC = segue.destinationViewController as! HitVC
+            hitVC.vm = HitVM(h: vm.hits[tableView.indexPathForSelectedRow!.row])
         }
     }
     
-    func gotoHitView(hit:Hit){
-        
-    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()

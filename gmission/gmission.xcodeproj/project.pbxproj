@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		9B3F80581C2ADB5100371C16 /* GoogleMaps.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 9B3F80561C2ADB5100371C16 /* GoogleMaps.bundle */; };
 		9B3F80591C2ADB5100371C16 /* GoogleMaps.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9B3F80571C2ADB5100371C16 /* GoogleMaps.framework */; };
+		9B3F805B1C2D65E700371C16 /* HitVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B3F805A1C2D65E700371C16 /* HitVC.swift */; };
 		9BD810C31C11F16E00CE09B9 /* CampaignListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BD810C21C11F16E00CE09B9 /* CampaignListVC.swift */; };
 		9BD810C51C13125F00CE09B9 /* MessageVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BD810C41C13125F00CE09B9 /* MessageVC.swift */; };
 		9BD810CC1C1315B700CE09B9 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BD810CB1C1315B700CE09B9 /* Accelerate.framework */; };
@@ -67,6 +68,7 @@
 /* Begin PBXFileReference section */
 		9B3F80561C2ADB5100371C16 /* GoogleMaps.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = GoogleMaps.bundle; path = Frameworks/GoogleMaps.bundle; sourceTree = "<group>"; };
 		9B3F80571C2ADB5100371C16 /* GoogleMaps.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleMaps.framework; path = Frameworks/GoogleMaps.framework; sourceTree = "<group>"; };
+		9B3F805A1C2D65E700371C16 /* HitVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HitVC.swift; sourceTree = "<group>"; };
 		9BD810C21C11F16E00CE09B9 /* CampaignListVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CampaignListVC.swift; sourceTree = "<group>"; };
 		9BD810C41C13125F00CE09B9 /* MessageVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageVC.swift; sourceTree = "<group>"; };
 		9BD810CB1C1315B700CE09B9 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
@@ -212,9 +214,10 @@
 			isa = PBXGroup;
 			children = (
 				9BE4F5F31C1172BB00371A3A /* EnhancedVC.swift */,
-				9BE4F5F51C1172D900371A3A /* CampaignVC.swift */,
-				9BD810C41C13125F00CE09B9 /* MessageVC.swift */,
 				9BD810C21C11F16E00CE09B9 /* CampaignListVC.swift */,
+				9BE4F5F51C1172D900371A3A /* CampaignVC.swift */,
+				9B3F805A1C2D65E700371C16 /* HitVC.swift */,
+				9BD810C41C13125F00CE09B9 /* MessageVC.swift */,
 				9BE4F5F71C1172E300371A3A /* MapVC.swift */,
 				9BE4F5F91C1172EF00371A3A /* MessageListVC.swift */,
 				9BE4F5FB1C11730400371A3A /* UserVC.swift */,
@@ -301,6 +304,7 @@
 				9BE4F5F61C1172D900371A3A /* CampaignVC.swift in Sources */,
 				9BD810FA1C1411E100CE09B9 /* PushNotificationManager.swift in Sources */,
 				9BE4F5E01C1170FB00371A3A /* AppDelegate.swift in Sources */,
+				9B3F805B1C2D65E700371C16 /* HitVC.swift in Sources */,
 				9BE4F5F41C1172BB00371A3A /* EnhancedVC.swift in Sources */,
 				9BD810C31C11F16E00CE09B9 /* CampaignListVC.swift in Sources */,
 				9BE4F5FF1C11777600371A3A /* TableBinder.swift in Sources */,

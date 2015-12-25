@@ -80,6 +80,7 @@ class HTTP{
             case .Success:
                 if let value = response.result.value {
                     let json = JSON(value)
+                    print("HTTP return:", json)
                     onSucceed(json)
                 }
             case .Failure(let error):

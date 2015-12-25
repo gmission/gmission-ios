@@ -62,15 +62,14 @@ class JsonEntity{
 class Campaign:JsonEntity{
     override class var urlname:String{return "campaign"}
     var title:String{return jsonDict["title"].stringValue}
+    var description:String{return jsonDict["brief"].stringValue}
 }
 
 class CampaignListVM{
     static let global = CampaignListVM()
     let campaigns = ArrayForTableView<Campaign>()
     
-    func refresh(done:F = nil){
-        self.campaigns.removeAll()
-        
+    func fillFakeContent(){
         self.campaigns.appendContentsOf([Campaign(jsonDict:["title":"a title"]),
             Campaign(jsonDict:["title":"b title"]),
             Campaign(jsonDict:["title":"c title"]),
@@ -78,9 +77,13 @@ class CampaignListVM{
             Campaign(jsonDict:["title":"e title"]),
             Campaign(jsonDict:["title":"f title"]),
             Campaign(jsonDict:["title":"g title"])])
-        done?()
-        return;
-        
+    }
+    
+    func refresh(done:F = nil){
+        self.campaigns.removeAll()
+//        fillFakeContent()
+//        done?()
+//        return;
         Campaign.getAll{ (campaigns:[Campaign])->Void in
             self.campaigns.appendContentsOf(campaigns)
             done?()
@@ -110,7 +113,7 @@ class CampaignListVC: EnhancedVC {
         
         binder.refreshTableContent()
         
-        EnhancedVC.showModalLoginView()
+//        EnhancedVC.showModalLoginView()
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
