@@ -16,7 +16,7 @@ class LoginVM{
     var loginPassword:String!
     func login(ok:F){
         let paras = ["username":loginUsername, "password":loginPassword]
-        HTTP.requestJSON(.POST, "user/auth", paras: paras, onFail: nil) { (json) -> () in
+        HTTP.requestJSON(.POST, "user/auth", paras) { (json) -> () in
             print("login OK", json)
             UserManager.global.afterLogin(self.loginUsername, pwd: self.loginPassword, tkn:json["token"].stringValue)
             ok?()
@@ -28,7 +28,7 @@ class LoginVM{
     var regEmail:String!
     func register(ok:F){
         let paras = ["username":regUsername, "password":regPassword, "email":regEmail]
-        HTTP.requestJSON(.POST, "user/register", paras: paras, onFail: nil) { (json) -> () in
+        HTTP.requestJSON(.POST, "user/register", paras) { (json) -> () in
             print("register OK", json)
             self.loginUsername = self.regUsername
             self.loginPassword = self.regPassword

@@ -11,12 +11,8 @@ import UIKit
 import SwiftyJSON
 
 
-class HitVM{
-    let hit:Hit
+class ImageHitVM:HitVM{
     
-    init(h:Hit){
-        hit = h
-    }
 //    func refresh(done:F = nil){
 //        Hit.query{ (hits:[Hit])->Void in
 //            self.hits.appendContentsOf(hits)
@@ -24,12 +20,12 @@ class HitVM{
 //    }
 }
 
-class HitVC: EnhancedVC {
+class ImageHitVC: EnhancedVC {
 //    @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var descriptionLabel: UITextView!
     
-    var vm:HitVM! = nil
+    var vm:ImageHitVM! = nil
 //    let binder:TableBinder<Hit> = TableBinder<Hit>()
 
     override func viewDidLoad() {
@@ -37,23 +33,12 @@ class HitVC: EnhancedVC {
         titleLabel.text = vm.hit.title
         descriptionLabel.text = vm.hit.description
         
-//        tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
-//        binder.bind(tableView, items: vm.hits, refreshFunc: vm.refresh)
-//        binder.cellFunc = { indexPath in
-//            let cell = self.tableView.dequeueReusableCellWithIdentifier("cell", forIndexPath: indexPath)
-//            let hit = self.vm.hits[indexPath.row]
-//            cell.textLabel?.text = hit.title
-//            return cell
-//        }
-//        binder.selectionFunc = {indexPath in
-//            self.gotoHitView(self.vm.hits[indexPath.row])
-//        }
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         print("segue of campaign")
         if segue.identifier == "showHit"{
-            let hitVC: HitVC = segue.destinationViewController as! HitVC
+//            let hitVC: HitVC = segue.destinationViewController as! HitVC
 //            hitVC.vm = HitVM(c: vm.hits[tableView.indexPathForSelectedRow!.row])
         }
     }

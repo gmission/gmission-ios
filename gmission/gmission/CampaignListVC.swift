@@ -24,8 +24,7 @@ class JsonEntity{
 
     // these restful function can be put anywhere..
     static func getAll<T:JsonEntity>(done:([T])->Void){
-        
-        HTTP.requestJSON(.GET, T.restUrl, paras: nil, onFail: nil){ (jsonRes) -> () in
+        HTTP.requestJSON(.GET, T.restUrl) { (jsonRes) -> () in
             let tArray = jsonRes["objects"].arrayValue.map({ (json) -> T in
                 return T(jsonDict: json)
             })
@@ -34,7 +33,7 @@ class JsonEntity{
     }
     
     static func getOne<T:JsonEntity>(done:([T])->Void){
-        HTTP.requestJSON(.GET, T.restUrl, paras: nil, onFail: nil){ (jsonRes) -> () in
+        HTTP.requestJSON(.GET, T.restUrl){ (jsonRes) -> () in
             let tArray = jsonRes["objects"].arrayValue.map({ (json) -> T in
                 return T(jsonDict: json)
             })
@@ -42,8 +41,9 @@ class JsonEntity{
         }
     }
     
-    static func query<T:JsonEntity>(done:([T])->Void){
-        HTTP.requestJSON(.GET, T.restUrl, paras: nil, onFail: nil){ (jsonRes) -> () in
+    static func query<T:JsonEntity>(q:[String:AnyObject], done:([T])->Void){
+        let jsonQ = JSON(q)
+        HTTP.requestJSON(.GET, T.restUrl, ["q": "\(jsonQ)"], .URL, nil) { (jsonRes) -> () in
             let tArray = jsonRes["objects"].arrayValue.map({ (json) -> T in
                 return T(jsonDict: json)
             })
@@ -52,7 +52,7 @@ class JsonEntity{
     }
     
     let jsonDict:JSON
-    var id:Int = 0
+    var id:Int{return jsonDict["id"].intValue}
     
     required init(jsonDict:JSON){
         self.jsonDict = jsonDict

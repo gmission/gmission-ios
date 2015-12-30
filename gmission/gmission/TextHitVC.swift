@@ -11,12 +11,7 @@ import UIKit
 import SwiftyJSON
 
 
-class HitVM{
-    let hit:Hit
-    
-    init(h:Hit){
-        hit = h
-    }
+class TextHitVM:HitVM{
 //    func refresh(done:F = nil){
 //        Hit.query{ (hits:[Hit])->Void in
 //            self.hits.appendContentsOf(hits)
@@ -24,12 +19,12 @@ class HitVM{
 //    }
 }
 
-class HitVC: EnhancedVC {
+class TextHitVC: EnhancedVC {
 //    @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var descriptionLabel: UITextView!
     
-    var vm:HitVM! = nil
+    var vm:TextHitVM! = nil
 //    let binder:TableBinder<Hit> = TableBinder<Hit>()
 
     override func viewDidLoad() {

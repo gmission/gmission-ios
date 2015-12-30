@@ -11,12 +11,9 @@ import UIKit
 import SwiftyJSON
 
 
-class HitVM{
-    let hit:Hit
+class SelectionHitVM:HitVM{
+    let selections = ArrayForTableView<Hit>()
     
-    init(h:Hit){
-        hit = h
-    }
 //    func refresh(done:F = nil){
 //        Hit.query{ (hits:[Hit])->Void in
 //            self.hits.appendContentsOf(hits)
@@ -24,12 +21,12 @@ class HitVM{
 //    }
 }
 
-class HitVC: EnhancedVC {
+class SelectionHitVC: EnhancedVC {
 //    @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var descriptionLabel: UITextView!
     
-    var vm:HitVM! = nil
+    var vm:SelectionHitVM! = nil
 //    let binder:TableBinder<Hit> = TableBinder<Hit>()
 
     override func viewDidLoad() {

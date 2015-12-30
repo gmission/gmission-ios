@@ -48,7 +48,7 @@ class HTTP{
         }
     }
     
-    static func newRequest(method: Alamofire.Method, var _ url: String, parameters: [String : AnyObject]? = nil, encoding: Alamofire.ParameterEncoding = .JSON, headers: [String : String]? = nil, onFail:OnFailFunc? = nil) -> Alamofire.Request{
+    static func newRequest(method: Alamofire.Method, var _ url: String, _ parameters: [String : AnyObject]?, _ encoding: Alamofire.ParameterEncoding, _ headers: [String : String]?, onFail:OnFailFunc?) -> Alamofire.Request{
         if !(url.hasPrefix("http://") || url.hasPrefix("https://")){
             url = "\(defaultUrlPrefix)\(url)"
         }
@@ -61,6 +61,7 @@ class HTTP{
                 if let onFail = onFail{
                     onFail(resp?.statusCode, content)
                 }else{
+                    print("to global handle error.", "url:", req?.URLString)
                     HTTP.handleErrors(url, statusCode: resp?.statusCode, content: content )
                 }
             }
@@ -68,20 +69,25 @@ class HTTP{
         return alamofireRequest
     }
     
-    static func requestJSON(method: Alamofire.Method, _ url:String, paras:[String:AnyObject]?, onFail:OnFailFunc?, _ onSucceed:(JSON)->()) -> Request{
-        var header = [String : String]()
+    static func newRequestWithToken(method: Alamofire.Method, _ url: String, _ parameters: [String : AnyObject]?, _ encoding: Alamofire.ParameterEncoding,  onFail:OnFailFunc?) -> Alamofire.Request{
+        var headers = [String : String]()
         let token = UserManager.global.token
         if token != ""{
-            header["Authorization"] = "gMission \(token)"
+            headers["Authorization"] = "gMission \(token)"
         }
-        return newRequest(method, url, parameters: paras, headers:header, onFail:onFail).responseJSON{
+        
+        return newRequest(method, url, parameters, encoding, headers, onFail:onFail)
+    }
+    
+    static func requestJSON(method: Alamofire.Method, _ url:String, _ parameters:[String:AnyObject]?=nil, _ encoding:Alamofire.ParameterEncoding = .JSON, _ onFail:OnFailFunc?=nil, _ onJSONSucceed:(JSON)->()) -> Request{
+        return newRequestWithToken(method, url, parameters, encoding, onFail:onFail).responseJSON{
             response in
             switch response.result{
             case .Success:
                 if let value = response.result.value {
                     let json = JSON(value)
-                    print("HTTP return:", json)
-                    onSucceed(json)
+//                    print("HTTP return:", json)
+                    onJSONSucceed(json)
                 }
             case .Failure(let error):
                 print(error)

@@ -28,7 +28,9 @@ class CampaignVM{
     
     func refresh(done:F = nil){
         self.hits.removeAll()
-        Hit.query{ (hits:[Hit])->Void in
+        let q = [ "filters" : [ ["name":"campaign_id","op":"eq","val":campaign.id] ] ]
+        
+        Hit.query(q){ (hits:[Hit])->Void in
             self.hits.appendContentsOf(hits)
             done?()
         }
@@ -64,6 +66,21 @@ class CampaignVC: EnhancedVC {
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         print("segue of campaign -> hit")
+        switch segue.identifier!{
+            case "showTextHit":
+            let hitVC: TextHitVC = segue.destinationViewController as! TextHitVC
+            hitVC.vm = TextHitVM(h: vm.hits[tableView.indexPathForSelectedRow!.row])
+            case "showImageHit":
+            let hitVC: ImageHitVC = segue.destinationViewController as! ImageHitVC
+            hitVC.vm = ImageHitVM(h: vm.hits[tableView.indexPathForSelectedRow!.row])
+            case "showSelectionHit":
+            let hitVC: SelectionHitVC = segue.destinationViewController as! SelectionHitVC
+            hitVC.vm = SelectionHitVM(h: vm.hits[tableView.indexPathForSelectedRow!.row])
+        default:
+            let hitVC: SelectionHitVC = segue.destinationViewController as! SelectionHitVC
+            hitVC.vm = SelectionHitVM(h: vm.hits[tableView.indexPathForSelectedRow!.row])
+            
+        }
         if segue.identifier == "showHit"{
             let hitVC: HitVC = segue.destinationViewController as! HitVC
             hitVC.vm = HitVM(h: vm.hits[tableView.indexPathForSelectedRow!.row])
