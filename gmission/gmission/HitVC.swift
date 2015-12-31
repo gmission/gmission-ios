@@ -11,11 +11,55 @@ import UIKit
 import SwiftyJSON
 
 
+class Answer:JsonEntity{
+    override class var urlname:String{return "answer"}
+    
+//    var hit_id:Int
+//    var attachment_id:Int
+//    var worker_id:Int
+//    var type:String
+//    override var dictToPost:[String:AnyObject]{return jsonDict}
+    
+    var brief:String{return jsonDict["brief"].stringValue}
+    var selection_id:Int{return jsonDict["brief"].int ?? 0}
+    var worker_id:Int{return jsonDict["worker_id"].intValue}
+    var created_on:String{return jsonDict["created_on"].stringValue}
+}
+
 class HitVM{
     let hit:Hit
     
+    var isRequester:Bool {return hit.requester_id == UserManager.currentUser.id}
+    var hasAnswered:Bool {return  answers.array.map{$0.worker_id}.contains(UserManager.currentUser.id) }
+    var enoughAnswers:Bool {return  answers.array.count >= hit.required_answer_count }
+    var canAnswer:Bool {return !(isRequester || hasAnswered || enoughAnswers) }
+    
+    var answers = ArrayForTableView<Answer>()
+    
     init(h:Hit){
         hit = h
+    }
+    
+    func postAnswer(answer:Answer, _ done:F){
+        Answer.postOne(answer, done: done)
+//        Answer.post
+    }
+    
+    func loadAnswers(done:F){
+        var q:[String:AnyObject]
+        if isRequester{
+            q = ["filters":[ ["name":"hit_id", "op":"eq", "val":hit.id] ] ]
+        }else{
+            q = ["filters":[ ["name":"hit_id", "op":"eq", "val":hit.id],
+                             ["name":"worker_id", "op":"eq", "val":UserManager.currentUser.id] ] ]
+        }
+        
+        Answer.query(q) { (answers:[Answer]) -> Void in
+            print("load answers", answers)
+            self.answers.removeAll()
+            self.answers.appendContentsOf(answers)
+            done?()
+        }
     }
 //    func refresh(done:F = nil){
 //        Hit.query{ (hits:[Hit])->Void in
@@ -25,58 +69,19 @@ class HitVM{
 }
 
 class HitVC: EnhancedVC {
-//    @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var titleLabel: UILabel!
-    @IBOutlet weak var descriptionLabel: UITextView!
-    
-    var vm:HitVM! = nil
-//    let binder:TableBinder<Hit> = TableBinder<Hit>()
-
     override func viewDidLoad() {
         super.viewDidLoad()
-        titleLabel.text = vm.hit.title
-        descriptionLabel.text = vm.hit.description
-        
-//        tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
-//        binder.bind(tableView, items: vm.hits, refreshFunc: vm.refresh)
-//        binder.cellFunc = { indexPath in
-//            let cell = self.tableView.dequeueReusableCellWithIdentifier("cell", forIndexPath: indexPath)
-//            let hit = self.vm.hits[indexPath.row]
-//            cell.textLabel?.text = hit.title
-//            return cell
-//        }
-//        binder.selectionFunc = {indexPath in
-//            self.gotoHitView(self.vm.hits[indexPath.row])
-//        }
+        self.navigationItem.setRightBarButtonItem(UIBarButtonItem(title: "Submit", style: UIBarButtonItemStyle.Plain, target: self, action: "submitAnswer"), animated: true)
     }
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        print("segue of campaign")
-        if segue.identifier == "showHit"{
-            let hitVC: HitVC = segue.destinationViewController as! HitVC
-//            hitVC.vm = HitVM(c: vm.hits[tableView.indexPathForSelectedRow!.row])
-        }
+    func submitAnswer(){
+        print("parent submit")
     }
     
-    
-    func gotoHitView(hit:Hit){
-        
-    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
 }

@@ -71,7 +71,7 @@ class HTTP{
     
     static func newRequestWithToken(method: Alamofire.Method, _ url: String, _ parameters: [String : AnyObject]?, _ encoding: Alamofire.ParameterEncoding,  onFail:OnFailFunc?) -> Alamofire.Request{
         var headers = [String : String]()
-        let token = UserManager.global.token
+        let token = UserManager.currentUser?.token ?? ""
         if token != ""{
             headers["Authorization"] = "gMission \(token)"
         }

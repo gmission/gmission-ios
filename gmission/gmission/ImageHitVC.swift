@@ -20,20 +20,51 @@ class ImageHitVM:HitVM{
 //    }
 }
 
-class ImageHitVC: EnhancedVC {
+class ImageHitVC: HitVC, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
 //    @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var descriptionLabel: UITextView!
     
+    @IBOutlet weak var imageView: UIImageView!
     var vm:ImageHitVM! = nil
 //    let binder:TableBinder<Hit> = TableBinder<Hit>()
+    @IBOutlet weak var viewForWorker: UIView!
 
+    @IBOutlet weak var answerTableView: UITableView!
     override func viewDidLoad() {
         super.viewDidLoad()
         titleLabel.text = vm.hit.title
         descriptionLabel.text = vm.hit.description
         
+        if vm.isRequester{
+            viewForWorker.hidden = true
+            answerTableView.hidden = false
+        }else{
+            viewForWorker.hidden = false
+            answerTableView.hidden = true
+        }
     }
+    
+    @IBAction func takePhotoClicked(sender: AnyObject) {
+        var imagePicker: UIImagePickerController!
+        imagePicker =  UIImagePickerController()
+        imagePicker.delegate = self
+        imagePicker.sourceType = .Camera
+        presentViewController(imagePicker, animated: true, completion: nil)
+    }
+    
+    @IBAction func choosePhotoClicked(sender: AnyObject) {
+        var imagePicker: UIImagePickerController!
+        imagePicker =  UIImagePickerController()
+        imagePicker.delegate = self
+        imagePicker.sourceType = .Camera
+        presentViewController(imagePicker, animated: true, completion: nil)
+    }
+    
+    func imagePickerController(picker: UIImagePickerController, didFinishPickingImage image: UIImage, editingInfo: [String : AnyObject]?) {
+        imageView.image = image
+    }
+    
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         print("segue of campaign")
@@ -44,24 +75,10 @@ class ImageHitVC: EnhancedVC {
     }
     
     
-    func gotoHitView(hit:Hit){
-        
-    }
-
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
 }

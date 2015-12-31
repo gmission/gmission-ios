@@ -51,11 +51,24 @@ class JsonEntity{
         }
     }
     
+    static func postOne<T:JsonEntity>(t:T, done:F){
+        HTTP.requestJSON(.POST, T.restUrl, t.jsonDict.dictionaryObject!, .JSON, nil) { (json) -> () in
+            print("posted \(json)")
+            done?()
+        }
+    }
+    
     let jsonDict:JSON
     var id:Int{return jsonDict["id"].intValue}
+//    var dictToPost:[String:AnyObject]{return [String:AnyObject]()}
     
     required init(jsonDict:JSON){
         self.jsonDict = jsonDict
+    }
+    
+    convenience init(dict:[String:AnyObject]){
+        let json = JSON(dict)
+        self.init(jsonDict:json)
     }
 }
 

@@ -23,6 +23,7 @@
 		9B62DDCF1C32D3BE00AD7F88 /* Multiple Choice-100.png in Resources */ = {isa = PBXBuildFile; fileRef = 9B62DDC61C32D3BE00AD7F88 /* Multiple Choice-100.png */; };
 		9B62DDD01C32D3BE00AD7F88 /* Text Box-100.png in Resources */ = {isa = PBXBuildFile; fileRef = 9B62DDC71C32D3BE00AD7F88 /* Text Box-100.png */; };
 		9B62DDD11C32D3BE00AD7F88 /* Trophy-75.png in Resources */ = {isa = PBXBuildFile; fileRef = 9B62DDC81C32D3BE00AD7F88 /* Trophy-75.png */; };
+		9B8CCC411C35987A006EBC04 /* HitListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B8CCC401C35987A006EBC04 /* HitListVC.swift */; };
 		9BD810C31C11F16E00CE09B9 /* CampaignListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BD810C21C11F16E00CE09B9 /* CampaignListVC.swift */; };
 		9BD810C51C13125F00CE09B9 /* MessageVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BD810C41C13125F00CE09B9 /* MessageVC.swift */; };
 		9BD810CC1C1315B700CE09B9 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BD810CB1C1315B700CE09B9 /* Accelerate.framework */; };
@@ -95,6 +96,7 @@
 		9B62DDC61C32D3BE00AD7F88 /* Multiple Choice-100.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Multiple Choice-100.png"; path = "resources/Multiple Choice-100.png"; sourceTree = SOURCE_ROOT; };
 		9B62DDC71C32D3BE00AD7F88 /* Text Box-100.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Text Box-100.png"; path = "resources/Text Box-100.png"; sourceTree = SOURCE_ROOT; };
 		9B62DDC81C32D3BE00AD7F88 /* Trophy-75.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Trophy-75.png"; path = "resources/Trophy-75.png"; sourceTree = SOURCE_ROOT; };
+		9B8CCC401C35987A006EBC04 /* HitListVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HitListVC.swift; sourceTree = "<group>"; };
 		9BD810C21C11F16E00CE09B9 /* CampaignListVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CampaignListVC.swift; sourceTree = "<group>"; };
 		9BD810C41C13125F00CE09B9 /* MessageVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageVC.swift; sourceTree = "<group>"; };
 		9BD810CB1C1315B700CE09B9 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
@@ -259,6 +261,7 @@
 				9BE4F5F31C1172BB00371A3A /* EnhancedVC.swift */,
 				9BD810C21C11F16E00CE09B9 /* CampaignListVC.swift */,
 				9BE4F5F51C1172D900371A3A /* CampaignVC.swift */,
+				9B8CCC401C35987A006EBC04 /* HitListVC.swift */,
 				9B3F805A1C2D65E700371C16 /* HitVC.swift */,
 				9B62DDBC1C32C07200AD7F88 /* TextHitVC.swift */,
 				9B62DDBE1C32C07F00AD7F88 /* WebHitVC.swift */,
@@ -367,6 +370,7 @@
 				9BE4F5FF1C11777600371A3A /* TableBinder.swift in Sources */,
 				9BD810C51C13125F00CE09B9 /* MessageVC.swift in Sources */,
 				9BD810FC1C1413C800CE09B9 /* SettingManager.swift in Sources */,
+				9B8CCC411C35987A006EBC04 /* HitListVC.swift in Sources */,
 				9BE4F6011C11826D00371A3A /* HTTP.swift in Sources */,
 				9BD810F81C1411CE00CE09B9 /* LocationManager.swift in Sources */,
 				9BE4F5FA1C1172EF00371A3A /* MessageListVC.swift in Sources */,
@@ -496,6 +500,7 @@
 					"$(PROJECT_DIR)/Frameworks",
 				);
 				INFOPLIST_FILE = gmission/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.gmissionhkust.gmission;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -515,6 +520,7 @@
 					"$(PROJECT_DIR)/Frameworks",
 				);
 				INFOPLIST_FILE = gmission/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.gmissionhkust.gmission;
 				PRODUCT_NAME = "$(TARGET_NAME)";

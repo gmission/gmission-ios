@@ -7,43 +7,57 @@
 //
 
 import Foundation
+import SwiftyJSON
 
 
 class User{
     
-    static var current:User{
-        return User()
-    }
-}
-
-class UserManager{
-    static let global = UserManager()
-    
+    var id:Int = 0
     var token:String = ""
     var username:String = ""
     var password:String = ""
+    init(id:Int, username:String, password:String,token:String){
+        self.id = id
+        self.token = token
+        self.username = username
+        self.password = password
+    }
+}
+
+
+class UserManager{
+    static let global = UserManager()
+    static var currentUser:User!
     
-    func saveUserInfo(){
-        settings.save(username, forKey: "loginUsername")
-        settings.save(password, forKey: "loginPassword")
-        settings.save(token, forKey: "loginToken")
+    func saveUserInfo(user:User){
+        settings.save(user.username, forKey: "loginUsername")
+        settings.save(user.password, forKey: "loginPassword")
+        settings.save(user.token, forKey: "loginToken")
+        settings.save("\(user.id)", forKey: "loginUserID")
     }
     
     func loadUserInfo(){
-        username = settings.load("loginUsername") ?? ""
-        password = settings.load("loginPassword") ?? ""
-        token = settings.load("loginToken") ?? ""
+        let username = settings.load("loginUsername") ?? ""
+        let password = settings.load("loginPassword") ?? ""
+        let token = settings.load("loginToken") ?? ""
+        let id = Int(settings.load("loginUserID") ?? "0") ?? 0
+        
+        if id != 0 {
+            UserManager.currentUser = User(id:id, username:username, password:password, token:token)
+        }else{
+            print("no login user")
+        }
     }
     
-    func afterLogin(un:String, pwd:String, tkn:String){
-        username = un
-        password = pwd
-        token = tkn
-        saveUserInfo()
+    func afterLogin(json:JSON){
+        let user = User(id: json["id"].intValue, username: json["username"].stringValue, password: json["password"].stringValue, token: json["token"].stringValue)
+        
+        UserManager.currentUser = user
+        saveUserInfo(user)
     }
+    
     
     init(){
-        loadUserInfo()
     }
     
 }

@@ -16,6 +16,8 @@ class Hit:JsonEntity{
     var title:String{return jsonDict["title"].stringValue}
     var description:String{return jsonDict["description"].stringValue}
     var type:String{return jsonDict["type"].stringValue}
+    var requester_id:Int{return jsonDict["requester_id"].intValue}
+    var required_answer_count:Int{return jsonDict["required_answer_count"].intValue}
 }
 
 class CampaignVM{
@@ -80,10 +82,6 @@ class CampaignVC: EnhancedVC {
             let hitVC: SelectionHitVC = segue.destinationViewController as! SelectionHitVC
             hitVC.vm = SelectionHitVM(h: vm.hits[tableView.indexPathForSelectedRow!.row])
             
-        }
-        if segue.identifier == "showHit"{
-            let hitVC: HitVC = segue.destinationViewController as! HitVC
-            hitVC.vm = HitVM(h: vm.hits[tableView.indexPathForSelectedRow!.row])
         }
     }
     

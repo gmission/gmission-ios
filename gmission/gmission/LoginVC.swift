@@ -18,7 +18,7 @@ class LoginVM{
         let paras = ["username":loginUsername, "password":loginPassword]
         HTTP.requestJSON(.POST, "user/auth", paras) { (json) -> () in
             print("login OK", json)
-            UserManager.global.afterLogin(self.loginUsername, pwd: self.loginPassword, tkn:json["token"].stringValue)
+            UserManager.global.afterLogin(json)
             ok?()
         }
     }
@@ -51,7 +51,13 @@ class LoginVC: EnhancedVC, UITextFieldDelegate {
         vm.loginUsername = loginUsernameField.text
         vm.loginPassword = loginPasswordField.text
         vm.login { () -> Void in
-            self.dismissViewControllerAnimated(true, completion: nil)
+            self.dismissViewControllerAnimated(true, completion: { () -> Void in
+                print( "top VC:", EnhancedVC.topViewController())
+                let vc = EnhancedVC.topViewController()
+                vc?.viewDidLoad()
+                vc?.viewWillAppear(true)
+                
+            })
             print("loginVC removed")
         }
     }
@@ -61,7 +67,9 @@ class LoginVC: EnhancedVC, UITextFieldDelegate {
         vm.regPassword = registerPasswordField.text
         vm.regEmail = registerEmailField.text
         vm.register { () -> Void in
-            self.dismissViewControllerAnimated(true, completion: nil)
+            self.dismissViewControllerAnimated(true, completion: { () -> Void in
+                
+            })
             print("loginVC removed")
         }
     }

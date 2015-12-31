@@ -19,30 +19,33 @@ class TextHitVM:HitVM{
 //    }
 }
 
-class TextHitVC: EnhancedVC {
+class TextHitVC: HitVC {
 //    @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var descriptionLabel: UITextView!
     
+    @IBOutlet weak var answerTextField: UITextField!
     var vm:TextHitVM! = nil
-//    let binder:TableBinder<Hit> = TableBinder<Hit>()
+    
+    @IBOutlet weak var answerTableView: UITableView!
+    let binder:TableBinder<Answer> = TableBinder<Answer>()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         titleLabel.text = vm.hit.title
         descriptionLabel.text = vm.hit.description
         
-//        tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
-//        binder.bind(tableView, items: vm.hits, refreshFunc: vm.refresh)
-//        binder.cellFunc = { indexPath in
-//            let cell = self.tableView.dequeueReusableCellWithIdentifier("cell", forIndexPath: indexPath)
-//            let hit = self.vm.hits[indexPath.row]
-//            cell.textLabel?.text = hit.title
-//            return cell
-//        }
-//        binder.selectionFunc = {indexPath in
-//            self.gotoHitView(self.vm.hits[indexPath.row])
-//        }
+        self.binder.bind(answerTableView, items: self.vm.answers, refreshFunc: vm.loadAnswers)
+        self.binder.cellFunc = { indexPath in
+            let answer = self.vm.answers[indexPath.row]
+            let cellId =  "textAnswerCell"
+            let cell = self.answerTableView.dequeueReusableCellWithIdentifier(cellId, forIndexPath: indexPath)
+            cell.textLabel?.text = answer.brief
+            cell.detailTextLabel?.text = answer.created_on
+            print("answer: \(answer.id) \(answer.brief) \(answer.created_on)")
+            return cell
+        }
+        binder.refreshTableContent()
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
@@ -53,10 +56,15 @@ class TextHitVC: EnhancedVC {
         }
     }
     
-    
-    func gotoHitView(hit:Hit){
-        
+    override func submitAnswer(){
+        print("children submit answer")
+        let answerDict:[String:AnyObject] = ["brief":answerTextField.text!, "hit_id":vm.hit.id, "type":"text", "worker_id":UserManager.currentUser.id]
+        vm.postAnswer(Answer(dict: answerDict)){
+           self.viewDidLoad()
+            self.viewWillAppear(true)
+        }
     }
+    
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()

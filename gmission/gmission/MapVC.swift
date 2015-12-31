@@ -7,13 +7,51 @@
 //
 
 import UIKit
+import GoogleMaps
+
+
+class MapVM{
+    let hits = ArrayForTableView<Hit>()
+    
+    init(){
+    }
+    
+    func refresh(done:F = nil){
+        self.hits.removeAll()
+        let q = [ "filters" : [ ["name":"location_id","op":"neq","val":"null"] ] ]
+        
+        Hit.query(q){ (hits:[Hit])->Void in
+            self.hits.appendContentsOf(hits)
+            done?()
+        }
+    }
+}
 
 class MapVC: EnhancedVC {
+    
+    var vm = MapVM()
 
+    @IBOutlet weak var mapView: GMSMapView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        self.navigationItem.setRightBarButtonItem(UIBarButtonItem(title: "HIT List", style: UIBarButtonItemStyle.Plain, target: self, action: "gotoHitList"), animated: true)
         // Do any additional setup after loading the view.
+        vm.refresh { () -> Void in
+            self.addHitsToMap()
+        }
+    }
+    
+    
+    func addHitsToMap(){
+        
+    }
+    
+    
+    func gotoHitList(){
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let hitListVC = storyboard.instantiateViewControllerWithIdentifier("hitListVC") as! HitListVC
+        self.navigationController?.pushViewController(hitListVC, animated: true)
     }
 
     override func didReceiveMemoryWarning() {

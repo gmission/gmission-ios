@@ -55,6 +55,10 @@ class TableBinder<T>: NSObject,UITableViewDataSource, UITableViewDelegate {
         }
     }
     
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        self.selectionFunc?(indexPath)
+    }
+    
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         return cellFunc(indexPath)
     }
