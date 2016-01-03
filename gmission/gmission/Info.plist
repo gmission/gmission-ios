@@ -58,5 +58,11 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSLocationUsageDescription</key>
+	<string>gMission needs your location to work well.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>gMission needs your location to work well.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>gMission needs your location to work well.</string>
 </dict>
 </plist>

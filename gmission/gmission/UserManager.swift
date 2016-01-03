@@ -10,7 +10,28 @@ import Foundation
 import SwiftyJSON
 
 
+
 class User{
+//    class UserModel:JsonEntity{
+//        override class var urlname:String{return "user"}
+//    }
+
+    func refresh(done:F){
+        let paras = ["username":username, "password":password]
+        print(paras)
+        HTTP.requestJSON(.POST, "user/auth", paras) { (json) -> () in
+            print("refresh OK", json)
+            UserManager.global.afterLogin(json, pwd: self.password)
+            self.email = json["email"].stringValue
+            self.credit = json["credit"].intValue
+            done?()
+        }
+    }
+
+    var credit:Int!
+    var email:String!
+
+//    var model:UserModel! = nil
     
     var id:Int = 0
     var token:String = ""
@@ -27,7 +48,15 @@ class User{
 
 class UserManager{
     static let global = UserManager()
-    static var currentUser:User!
+    static var currentUser:User! = nil
+    
+    static func logout(){
+        settings.save("", forKey: "loginUsername")
+        settings.save("", forKey: "loginPassword")
+        settings.save("", forKey: "loginToken")
+        settings.save("", forKey: "loginUserID")
+        currentUser = nil
+    }
     
     func saveUserInfo(user:User){
         settings.save(user.username, forKey: "loginUsername")
@@ -49,8 +78,12 @@ class UserManager{
         }
     }
     
-    func afterLogin(json:JSON){
+    func afterLogin(json:JSON, pwd:String){
         let user = User(id: json["id"].intValue, username: json["username"].stringValue, password: json["password"].stringValue, token: json["token"].stringValue)
+        
+        user.password = pwd
+        user.credit = json["credit"].intValue
+        user.email = json["email"].stringValue
         
         UserManager.currentUser = user
         saveUserInfo(user)

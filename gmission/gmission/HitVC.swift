@@ -27,7 +27,7 @@ class Answer:JsonEntity{
 }
 
 class HitVM{
-    let hit:Hit
+    var hit:Hit
     
     var isRequester:Bool {return hit.requester_id == UserManager.currentUser.id}
     var hasAnswered:Bool {return  answers.array.map{$0.worker_id}.contains(UserManager.currentUser.id) }
@@ -71,7 +71,17 @@ class HitVM{
 class HitVC: EnhancedVC {
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         self.navigationItem.setRightBarButtonItem(UIBarButtonItem(title: "Submit", style: UIBarButtonItemStyle.Plain, target: self, action: "submitAnswer"), animated: true)
+//        self.navigationItem.leftBarButtonItem?.width = 80
+    }
+    
+    func switchToRequester(){
+        self.navigationItem.setRightBarButtonItem(UIBarButtonItem(title: "Close this HIT", style: UIBarButtonItemStyle.Plain, target: self, action: "closeHit"), animated: true)
+    }
+    
+    func closeHit(){
+        print("parent close")
     }
     
     func submitAnswer(){

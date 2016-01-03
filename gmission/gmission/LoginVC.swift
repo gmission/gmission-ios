@@ -18,7 +18,7 @@ class LoginVM{
         let paras = ["username":loginUsername, "password":loginPassword]
         HTTP.requestJSON(.POST, "user/auth", paras) { (json) -> () in
             print("login OK", json)
-            UserManager.global.afterLogin(json)
+            UserManager.global.afterLogin(json, pwd: self.loginPassword)
             ok?()
         }
     }

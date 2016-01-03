@@ -32,12 +32,13 @@ class JsonEntity{
         }
     }
     
-    static func getOne<T:JsonEntity>(done:([T])->Void){
-        HTTP.requestJSON(.GET, T.restUrl){ (jsonRes) -> () in
-            let tArray = jsonRes["objects"].arrayValue.map({ (json) -> T in
-                return T(jsonDict: json)
-            })
-            done(tArray)
+    static func getOne<T:JsonEntity>(id:Int, done:(T)->Void){
+        HTTP.requestJSON(.GET, "\(T.restUrl)/\(id)"){ (jsonRes) -> () in
+            done(T(jsonDict: jsonRes))
+//            let tArray = jsonRes["objects"].arrayValue.map({ (json) -> T in
+//                return T(jsonDict: json)
+//            })
+//            done(tArray)
         }
     }
     
@@ -58,7 +59,23 @@ class JsonEntity{
         }
     }
     
-    let jsonDict:JSON
+    static func postOne<T:JsonEntity>(t:T, done:(T)->Void){
+        HTTP.requestJSON(.POST, T.restUrl, t.jsonDict.dictionaryObject!, .JSON, nil) { (json) -> () in
+            print("posted \(json)")
+            let retT = T(jsonDict: json)
+            done(retT)
+        }
+    }
+    
+    
+    static func put<T:JsonEntity>(t:T, done:F){
+        HTTP.requestJSON(.PUT, "\(T.restUrl)/\(t.id)", t.jsonDict.dictionaryObject!, .JSON, nil) { (json) -> () in
+            print("put \(json)")
+            done?()
+        }
+    }
+    
+    var jsonDict:JSON
     var id:Int{return jsonDict["id"].intValue}
 //    var dictToPost:[String:AnyObject]{return [String:AnyObject]()}
     
@@ -112,6 +129,8 @@ class CampaignListVC: EnhancedVC {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+//        EnhancedVC.showModalLoginView()
+        self.title   = "Campaigns"
 //        tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
         binder.bind(tableView, items: vm.campaigns, refreshFunc: vm.refresh)
         binder.cellFunc = { indexPath in

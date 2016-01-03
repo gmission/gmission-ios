@@ -96,4 +96,51 @@ class HTTP{
         
      }
     
+    
+    static func uploadFile(var url:String, imageData:NSData, fileName:String, callback:(JSON:AnyObject?, error:NSError?)->()){
+        if !(url.hasPrefix("http://") || url.hasPrefix("https://")){
+            url = "\(defaultUrlPrefix)\(url)"
+        }
+        var headers = [String : String]()
+        let token = UserManager.currentUser?.token ?? ""
+        if token != ""{
+            headers["Authorization"] = "gMission \(token)"
+        }
+        
+        Alamofire.upload(.POST, url, headers: headers, multipartFormData: { (multipartFormData) -> Void in
+            multipartFormData.appendBodyPart(data: imageData, name: "file", fileName: fileName, mimeType: "image/jpg")
+            }) { (encodingResult) -> Void in
+                switch encodingResult {
+                case .Success(let upload, _, _):
+                    upload.responseJSON { response in
+                        debugPrint(response)
+                        callback(JSON:response.result.value, error:nil)
+                    }
+                case .Failure(let encodingError):
+                    print(encodingError)
+                }
+        }
+    }
+
+    class func uploadImage(imageData:NSData, fileName:String, callback:(nameFromServer:String?, error:NSError?)->()){
+        let urlStr = "image/upload"
+        HTTP.uploadFile(urlStr, imageData: imageData, fileName: fileName, callback: {(JSON, error) in
+            if let JSONDict = JSON  as? NSDictionary{
+                callback(nameFromServer: (JSONDict["filename"] as! String), error: nil)
+            }else{
+                callback(nameFromServer: nil, error: error!)
+            }
+        })
+    }
+    
+//    static func downloadFile(urlStr:String, callback:(imageData:NSData?, error:NSError?)->()){
+//        let destination = Alamofire.Request.suggestedDownloadDestination(directory: .DocumentDirectory, domain: .UserDomainMask)
+//        
+//        Alamofire.request(.GET, urlStr).response { (request, response, data, error) in
+//            callback(imageData: data as? NSData, error: error)
+//        }
+//        
+//    }
+    
+
 }

@@ -25,6 +25,45 @@ class EnhancedVC: UIViewController {
         
     }
     
+    let hud = MBProgressHUD()
+    
+    func showHUD(content:String){
+        self.view.addSubview(self.hud)
+        hud.mode = MBProgressHUDMode.Indeterminate
+        hud.labelText = content
+        hud.show(true)
+    }
+    func hideHUD(){
+        self.hud.removeFromSuperview()
+    }
+    func flashHUD(content:String, _ time:Double){
+        self.view.addSubview(self.hud)
+        hud.labelText = content
+        hud.mode = MBProgressHUDMode.Text
+        hud.hide(true, afterDelay: time)
+    }
+    
+    
+    func pushHitView(hit:Hit){
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        switch hit.type{
+        case "text":
+            let vc = storyboard.instantiateViewControllerWithIdentifier("textHitVC") as! TextHitVC
+            vc.vm = TextHitVM(h:hit)
+            self.navigationController!.pushViewController(vc, animated:true)
+        case "image":
+            let vc = storyboard.instantiateViewControllerWithIdentifier("imageHitVC") as! ImageHitVC
+            vc.vm = ImageHitVM(h:hit)
+            self.navigationController!.pushViewController(vc, animated:true)
+        case "selection":
+            let vc = storyboard.instantiateViewControllerWithIdentifier("selectionHitVC") as! SelectionHitVC
+            vc.vm = SelectionHitVM(h:hit)
+            self.navigationController!.pushViewController(vc, animated:true)
+        default:
+            return
+        }
+    }
+    
     static func showModalLoginView(){
         let loginVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewControllerWithIdentifier("LoginVC")
         topViewController()?.presentViewController(loginVC, animated: true, completion: { () -> Void in

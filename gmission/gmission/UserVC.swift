@@ -8,12 +8,64 @@
 
 import UIKit
 
-class UserVC: EnhancedVC {
 
+class UserVM{
+    static let global = UserVM()
+    let hits = ArrayForTableView<Hit>()
+    
+    var user:User{return UserManager.currentUser}
+    
+    func refresh(done:F = nil){
+        self.hits.removeAll()
+        let q = [ "filters" : [ ["name":"requester_id","op":"eq","val":UserManager.currentUser.id] ] ]
+        
+        Hit.query(q) { (hits:[Hit])->Void in
+            self.hits.appendContentsOf(hits)
+            done?()
+        }
+    }
+    
+}
+
+class UserVC: EnhancedVC {
+    
+    let vm = UserVM.global
+    let binder:TableBinder<Hit> = TableBinder<Hit>()
+
+    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var creditLabel: UILabel!
+    @IBOutlet weak var emailLabel: UILabel!
+    @IBOutlet weak var usernameLabel: UILabel!
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
+        self.title = "User"
+        self.navigationItem.setRightBarButtonItem(UIBarButtonItem(title: "Logout", style: UIBarButtonItemStyle.Plain, target: self, action: "logout"), animated: true)
+        self.usernameLabel.text = self.vm.user.username
+        vm.user.refresh{
+            self.emailLabel.text = self.vm.user.email
+            self.creditLabel.text = String(self.vm.user.credit)
+        }
+        binder.bind(tableView, items: vm.hits, refreshFunc: vm.refresh)
+        binder.cellFunc = { indexPath in
+            let hit = self.vm.hits[indexPath.row]
+            //            let cellMapping = ["image":"imageCell", "selection":"selectionCell", "text":"textCell"]
+            let cellId = "hitCell"// cellMapping[hit.type] ?? "imageCell"
+            let cell = self.tableView.dequeueReusableCellWithIdentifier(cellId, forIndexPath: indexPath)
+            cell.textLabel?.text = hit.title
+            return cell
+        }
+        
+        binder.selectionFunc = { indexPath in
+            let hit = self.vm.hits[indexPath.row]
+            self.pushHitView(hit)
+        }
+        
+        binder.refreshTableContent()
+    }
+    
+    func logout(){
+        UserManager.logout()
+        EnhancedVC.showModalLoginView()
     }
 
     override func didReceiveMemoryWarning() {

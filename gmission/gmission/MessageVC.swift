@@ -35,7 +35,7 @@ class MessageVC: EnhancedVC {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        titleLabel.text = vm.message.title
+//        titleLabel.text = vm.message.title
     }
     
     func gotoHitView(hit:Hit){

@@ -10,6 +10,26 @@ import UIKit
 
 import SwiftyJSON
 
+class Coordinate:JsonEntity{
+    override class var urlname:String{return "coordinate"}
+    
+}
+
+class Location:JsonEntity{
+    override class var urlname:String{return "location"}
+    var coordinate_id:Int{return jsonDict["coordinate_id"].intValue}
+    var coord:Coordinate?
+    var lat:Double {return (coord?.jsonDict["latitude"].doubleValue)!}
+    var lon:Double {return (coord?.jsonDict["longitude"].doubleValue)!}
+    var z:Double {return (coord?.jsonDict["altitude"].doubleValue)!}
+    
+    func refreshCoordinate(done:F){
+        Coordinate.getOne(coordinate_id) { (crd:Coordinate) -> Void in
+            self.coord = crd
+            done?()
+        }
+    }
+}
 
 class Hit:JsonEntity{
     override class var urlname:String{return "hit"}
@@ -18,6 +38,14 @@ class Hit:JsonEntity{
     var type:String{return jsonDict["type"].stringValue}
     var requester_id:Int{return jsonDict["requester_id"].intValue}
     var required_answer_count:Int{return jsonDict["required_answer_count"].intValue}
+    var location_id:Int{return jsonDict["location_id"].intValue}
+    var location:Location?
+    func refreshLocation(done:F){
+        Location.getOne(location_id) { (loc:Location) -> Void in
+            self.location = loc
+            loc.refreshCoordinate(done)
+        }
+    }
 }
 
 class CampaignVM{
@@ -41,18 +69,28 @@ class CampaignVM{
 
 class CampaignVC: EnhancedVC {
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var descriptionLabel: UITextView!
     
     var vm:CampaignVM! = nil
     let binder:TableBinder<Hit> = TableBinder<Hit>()
 
+    override func viewDidLayoutSubviews() { // stupid bug
+        super.viewDidLayoutSubviews()
+        self.descriptionLabel.setContentOffset(CGPoint.zero, animated: false)
+        self.descriptionLabel.scrollRangeToVisible(NSRange(location:0, length:0))
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        titleLabel.text = vm.campaign.title
-        descriptionLabel.text = vm.campaign.description
+        self.title = vm.campaign.title
         
-//        tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        descriptionLabel.scrollEnabled = false
+        if vm.campaign.description != ""{
+            descriptionLabel.text = vm.campaign.description
+        }else{
+            descriptionLabel.text = "This campaign does not have more information."
+        }
+        
         binder.bind(tableView, items: vm.hits, refreshFunc: vm.refresh)
         binder.cellFunc = { indexPath in
             let hit = self.vm.hits[indexPath.row]

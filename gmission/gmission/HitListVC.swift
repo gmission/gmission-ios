@@ -48,48 +48,11 @@ class HitListVC: EnhancedVC {
             return cell
         }
         binder.selectionFunc = { indexPath in
-//            self.tableView.cellFor
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
             let hit = self.vm.hits[indexPath.row]
-            
-            switch hit.type{
-            case "text":
-                let vc = storyboard.instantiateViewControllerWithIdentifier("textHitVC") as! TextHitVC
-                vc.vm = TextHitVM(h:hit)
-                self.navigationController!.pushViewController(vc, animated:true)
-            case "image":
-                let vc = storyboard.instantiateViewControllerWithIdentifier("imageHitVC") as! ImageHitVC
-                vc.vm = ImageHitVM(h:hit)
-                self.navigationController!.pushViewController(vc, animated:true)
-            case "selection":
-                let vc = storyboard.instantiateViewControllerWithIdentifier("selectionHitVC") as! SelectionHitVC
-                vc.vm = SelectionHitVM(h:hit)
-                self.navigationController!.pushViewController(vc, animated:true)
-            default:
-                return
-            }
+            self.pushHitView(hit)
         }
         binder.refreshTableContent()
     }
-    
-//    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-//        print("segue of campaign -> hit")
-//        switch segue.identifier!{
-//            case "showTextHit":
-//            let hitVC: TextHitVC = segue.destinationViewController as! TextHitVC
-//            hitVC.vm = TextHitVM(h: vm.hits[tableView.indexPathForSelectedRow!.row])
-//            case "showImageHit":
-//            let hitVC: ImageHitVC = segue.destinationViewController as! ImageHitVC
-//            hitVC.vm = ImageHitVM(h: vm.hits[tableView.indexPathForSelectedRow!.row])
-//            case "showSelectionHit":
-//            let hitVC: SelectionHitVC = segue.destinationViewController as! SelectionHitVC
-//            hitVC.vm = SelectionHitVM(h: vm.hits[tableView.indexPathForSelectedRow!.row])
-//        default:
-//            let hitVC: SelectionHitVC = segue.destinationViewController as! SelectionHitVC
-//            hitVC.vm = SelectionHitVM(h: vm.hits[tableView.indexPathForSelectedRow!.row])
-//            
-//        }
-//    }
     
 
     override func didReceiveMemoryWarning() {

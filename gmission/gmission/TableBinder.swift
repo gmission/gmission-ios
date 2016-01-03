@@ -55,6 +55,14 @@ class TableBinder<T>: NSObject,UITableViewDataSource, UITableViewDelegate {
         }
     }
     
+    func refreshThen(done:F){
+        self.refreshFunc{() in
+            self.tableView.reloadData()
+            self.refreshControl.endRefreshing()
+            done?()
+        }
+    }
+    
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         self.selectionFunc?(indexPath)
     }

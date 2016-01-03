@@ -23,11 +23,12 @@ class SelectionHitVM:HitVM{
     var selected = [Int]()
     
     func refresh(done:F = nil){
-        Selection.getAll{ (selections:[Selection])->Void in
+        let q = ["filters":[ ["name":"hit_id","op":"eq","val":self.hit.id] ] ]
+        Selection.query(q){ (selections:[Selection])->Void in
+            self.selections.removeAll()
             self.selections.appendContentsOf(selections)
             
             let q = ["filters":[ ["name":"hit_id","op":"eq","val":self.hit.id] ] ]
-            
             Answer.query(q) { (answers:[Answer]) -> Void in
                 print("load answers", answers)
                 self.answers.removeAll()
@@ -40,7 +41,7 @@ class SelectionHitVM:HitVM{
 
 class SelectionHitVC: HitVC {
 //    @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var titleLabel: UILabel!
+//    @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var descriptionLabel: UITextView!
     
     
@@ -50,9 +51,13 @@ class SelectionHitVC: HitVC {
     @IBOutlet weak var selectionTableView: UITableView!
     let binder:TableBinder<Selection> = TableBinder<Selection>()
     
+    override func viewDidLayoutSubviews() {
+        self.descriptionLabel.contentOffset = CGPointZero;
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        titleLabel.text = vm.hit.title
+//        titleLabel.text = vm.hit.title
         descriptionLabel.text = vm.hit.description
         
         
@@ -86,6 +91,7 @@ class SelectionHitVC: HitVC {
         }
         self.binder.selectionFunc = { indexPath in
             if self.vm.canAnswer{
+                print("can answer")
                 let cell = self.selectionTableView.cellForRowAtIndexPath(indexPath)!
                 let selection = self.vm.selections[indexPath.row]
     //            if selection.id
@@ -98,6 +104,8 @@ class SelectionHitVC: HitVC {
                 }
                 
                 print("select selection: \(selection.id) \(selection.brief)")
+            }else{
+                print("cannot answer")
             }
         }
         binder.refreshTableContent()
