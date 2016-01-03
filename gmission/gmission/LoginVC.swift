@@ -76,9 +76,12 @@ class LoginVC: EnhancedVC, UITextFieldDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+//        
+//        let textFields = [loginUsernameField, loginPasswordField, registerEmailField, registerUsernameField, registerPasswordField]
+//        let defaultTexts = ["zchenah", "123456", "zchenah@ust.hk", "zchenah", "123456"]
         
-        let textFields = [loginUsernameField, loginPasswordField, registerEmailField, registerUsernameField, registerPasswordField]
-        let defaultTexts = ["zchenah", "123456", "zchenah@ust.hk", "zchenah", "123456"]
+        let textFields = [loginUsernameField, loginPasswordField]
+        let defaultTexts = ["zchenah", "123456"]
         
         zip(textFields, defaultTexts).forEach{$0.text = $1}
         textFields.forEach{$0.delegate = self}

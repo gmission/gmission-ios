@@ -28,6 +28,7 @@
 		9B62DDD01C32D3BE00AD7F88 /* Text Box-100.png in Resources */ = {isa = PBXBuildFile; fileRef = 9B62DDC71C32D3BE00AD7F88 /* Text Box-100.png */; };
 		9B62DDD11C32D3BE00AD7F88 /* Trophy-75.png in Resources */ = {isa = PBXBuildFile; fileRef = 9B62DDC81C32D3BE00AD7F88 /* Trophy-75.png */; };
 		9B8CCC411C35987A006EBC04 /* HitListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B8CCC401C35987A006EBC04 /* HitListVC.swift */; };
+		9BB32A791C38F589007AEDB5 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 9BB32A781C38F589007AEDB5 /* icon.png */; };
 		9BD810C31C11F16E00CE09B9 /* CampaignListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BD810C21C11F16E00CE09B9 /* CampaignListVC.swift */; };
 		9BD810C51C13125F00CE09B9 /* MessageVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BD810C41C13125F00CE09B9 /* MessageVC.swift */; };
 		9BD810CC1C1315B700CE09B9 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BD810CB1C1315B700CE09B9 /* Accelerate.framework */; };
@@ -109,6 +110,7 @@
 		9B62DDC71C32D3BE00AD7F88 /* Text Box-100.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Text Box-100.png"; path = "resources/Text Box-100.png"; sourceTree = SOURCE_ROOT; };
 		9B62DDC81C32D3BE00AD7F88 /* Trophy-75.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Trophy-75.png"; path = "resources/Trophy-75.png"; sourceTree = SOURCE_ROOT; };
 		9B8CCC401C35987A006EBC04 /* HitListVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HitListVC.swift; sourceTree = "<group>"; };
+		9BB32A781C38F589007AEDB5 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon.png; path = resources/icon.png; sourceTree = SOURCE_ROOT; };
 		9BD810C21C11F16E00CE09B9 /* CampaignListVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CampaignListVC.swift; sourceTree = "<group>"; };
 		9BD810C41C13125F00CE09B9 /* MessageVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageVC.swift; sourceTree = "<group>"; };
 		9BD810CB1C1315B700CE09B9 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
@@ -184,6 +186,7 @@
 		9B62DDD21C32D3C700AD7F88 /* images */ = {
 			isa = PBXGroup;
 			children = (
+				9BB32A781C38F589007AEDB5 /* icon.png */,
 				9B5C515F1C36C5E000AE5381 /* Message-75.png */,
 				9B5C51601C36C5E000AE5381 /* User Female-75.png */,
 				9B5C51591C366D9500AE5381 /* question_green.png */,
@@ -309,6 +312,7 @@
 				9BE4F5D91C1170FB00371A3A /* Frameworks */,
 				9BE4F5DA1C1170FB00371A3A /* Resources */,
 				9BE4F60A1C1190B300371A3A /* Embed Frameworks */,
+				9BB32A7A1C397045007AEDB5 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -370,6 +374,7 @@
 				9B5C51611C36C5E000AE5381 /* Message-75.png in Resources */,
 				9B5C515C1C366D9500AE5381 /* question_blue.png in Resources */,
 				9B3F80581C2ADB5100371C16 /* GoogleMaps.bundle in Resources */,
+				9BB32A791C38F589007AEDB5 /* icon.png in Resources */,
 				9B62DDC91C32D3BE00AD7F88 /* Camera-100.png in Resources */,
 				9B62DDCA1C32D3BE00AD7F88 /* Checklist Filled-100.png in Resources */,
 				9B62DDCF1C32D3BE00AD7F88 /* Multiple Choice-100.png in Resources */,
@@ -378,6 +383,22 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		9BB32A7A1C397045007AEDB5 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "APP_PATH=\"${TARGET_BUILD_DIR}/${WRAPPER_NAME}\"\n\n# This script loops through the frameworks embedded in the application and\n# removes unused architectures.\nfind \"$APP_PATH\" -name '*.framework' -type d | while read -r FRAMEWORK\ndo\nFRAMEWORK_EXECUTABLE_NAME=$(defaults read \"$FRAMEWORK/Info.plist\" CFBundleExecutable)\nFRAMEWORK_EXECUTABLE_PATH=\"$FRAMEWORK/$FRAMEWORK_EXECUTABLE_NAME\"\necho \"Executable is $FRAMEWORK_EXECUTABLE_PATH\"\n\nEXTRACTED_ARCHS=()\n\nfor ARCH in $ARCHS\ndo\necho \"Extracting $ARCH from $FRAMEWORK_EXECUTABLE_NAME\"\nlipo -extract \"$ARCH\" \"$FRAMEWORK_EXECUTABLE_PATH\" -o \"$FRAMEWORK_EXECUTABLE_PATH-$ARCH\"\nEXTRACTED_ARCHS+=(\"$FRAMEWORK_EXECUTABLE_PATH-$ARCH\")\ndone\n\necho \"Merging extracted architectures: ${ARCHS}\"\nlipo -o \"$FRAMEWORK_EXECUTABLE_PATH-merged\" -create \"${EXTRACTED_ARCHS[@]}\"\nrm \"${EXTRACTED_ARCHS[@]}\"\n\necho \"Replacing original executable with thinned version\"\nrm \"$FRAMEWORK_EXECUTABLE_PATH\"\nmv \"$FRAMEWORK_EXECUTABLE_PATH-merged\" \"$FRAMEWORK_EXECUTABLE_PATH\"\n\ndone\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		9BE4F5D81C1170FB00371A3A /* Sources */ = {
@@ -531,11 +552,12 @@
 				INFOPLIST_FILE = gmission/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.gmissionhkust.gmission;
+				PRODUCT_BUNDLE_IDENTIFIER = com.gmissionhkust.gmissionios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "gmission-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -554,10 +576,11 @@
 				INFOPLIST_FILE = gmission/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.gmissionhkust.gmission;
+				PRODUCT_BUNDLE_IDENTIFIER = com.gmissionhkust.gmissionios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "gmission-Bridging-Header.h";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

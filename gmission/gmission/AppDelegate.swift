@@ -22,7 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
         
-        GMSServices.provideAPIKey("AIzaSyBxXTFvDC9cfD8KL_I3V5G0in3U-qbICXI");
+        GMSServices.provideAPIKey("AIzaSyDnkJRC5XLTRA46VFRSxJzoE8b0Nsj3SVk");
         
         UserManager.global.loadUserInfo()
         
