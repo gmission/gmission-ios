@@ -12,6 +12,26 @@ import SwiftyJSON
 
 
 
+
+
+
+////
+////
+////
+////
+////
+////
+////
+////  Not being used anymore.
+////
+////
+////
+////
+////
+////
+////
+////
+
 class MessageVM{
     let message:Message
     let hits = ArrayForTableView<Hit>()

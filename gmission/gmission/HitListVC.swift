@@ -18,14 +18,20 @@ class HitListVM{
     }
     
     func refresh(done:F = nil){
-        self.hits.removeAll()
         let q = [ "filters" : [ ["name":"location_id","op":"neq","val":"null"] ] ]
         
         Hit.query(q){ (hits:[Hit])->Void in
+            self.hits.removeAll()
             self.hits.appendContentsOf(hits)
             done?()
         }
     }
+}
+
+func customizeHitCell(hit:Hit, _ cell:UITableViewCell){
+    let iconDict = ["image":"imageHIT", "selection":"selectionHIT", "text":"textHIT", "web":"webHIT"]
+    cell.textLabel?.text = hit.title
+    cell.imageView?.image = UIImage(named: iconDict[hit.type]!)
 }
 
 class HitListVC: EnhancedVC {
@@ -37,21 +43,23 @@ class HitListVC: EnhancedVC {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-//        tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
         binder.bind(tableView, items: vm.hits, refreshFunc: vm.refresh)
         binder.cellFunc = { indexPath in
             let hit = self.vm.hits[indexPath.row]
-//            let cellMapping = ["image":"imageCell", "selection":"selectionCell", "text":"textCell"]
-            let cellId = "hitCell"// cellMapping[hit.type] ?? "imageCell"
-            let cell = self.tableView.dequeueReusableCellWithIdentifier(cellId, forIndexPath: indexPath)
-            cell.textLabel?.text = hit.title
+            let cell = self.tableView.dequeueReusableCellWithIdentifier("hitCell", forIndexPath: indexPath)
+            customizeHitCell(hit, cell)
             return cell
         }
         binder.selectionFunc = { indexPath in
             let hit = self.vm.hits[indexPath.row]
             self.pushHitView(hit)
         }
-        binder.refreshTableContent()
+        
+        self.showHUD("Loading HITs...")
+        binder.refreshThen { () -> Void in
+            self.hideHUD()
+        }
+        
     }
     
 

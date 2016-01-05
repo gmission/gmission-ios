@@ -17,12 +17,13 @@ class Answer:JsonEntity{
 //    var hit_id:Int
 //    var attachment_id:Int
 //    var worker_id:Int
-//    var type:String
 //    override var dictToPost:[String:AnyObject]{return jsonDict}
     
     var brief:String{return jsonDict["brief"].stringValue}
     var selection_id:Int{return jsonDict["brief"].int ?? 0}
+    var type:String{return jsonDict["type"].stringValue}
     var worker_id:Int{return jsonDict["worker_id"].intValue}
+    var att_id:Int{return jsonDict["attachment_id"].intValue}
     var created_on:String{return jsonDict["created_on"].stringValue}
 }
 

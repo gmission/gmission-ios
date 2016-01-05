@@ -57,10 +57,10 @@ class CampaignVM{
     }
     
     func refresh(done:F = nil){
-        self.hits.removeAll()
         let q = [ "filters" : [ ["name":"campaign_id","op":"eq","val":campaign.id] ] ]
         
         Hit.query(q){ (hits:[Hit])->Void in
+            self.hits.removeAll()
             self.hits.appendContentsOf(hits)
             done?()
         }
@@ -100,7 +100,11 @@ class CampaignVC: EnhancedVC {
             cell.textLabel?.text = hit.title
             return cell
         }
-        binder.refreshTableContent()
+        
+        self.showHUD("Loading HITs...")
+        binder.refreshThen { () -> Void in
+            self.hideHUD()
+        }
         
     }
     

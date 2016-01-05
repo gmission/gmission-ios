@@ -48,10 +48,8 @@ class UserVC: EnhancedVC {
         binder.bind(tableView, items: vm.hits, refreshFunc: vm.refresh)
         binder.cellFunc = { indexPath in
             let hit = self.vm.hits[indexPath.row]
-            //            let cellMapping = ["image":"imageCell", "selection":"selectionCell", "text":"textCell"]
-            let cellId = "hitCell"// cellMapping[hit.type] ?? "imageCell"
-            let cell = self.tableView.dequeueReusableCellWithIdentifier(cellId, forIndexPath: indexPath)
-            cell.textLabel?.text = hit.title
+            let cell = self.tableView.dequeueReusableCellWithIdentifier("hitCell", forIndexPath: indexPath)
+            customizeHitCell(hit, cell)
             return cell
         }
         

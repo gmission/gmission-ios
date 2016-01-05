@@ -48,6 +48,10 @@ class HTTP{
         }
     }
     
+    static func imageURLForName(name:String)->String{
+        return "\(defaultUrlPrefix)static/image/original/\(name)"
+    }
+    
     static func newRequest(method: Alamofire.Method, var _ url: String, _ parameters: [String : AnyObject]?, _ encoding: Alamofire.ParameterEncoding, _ headers: [String : String]?, onFail:OnFailFunc?) -> Alamofire.Request{
         if !(url.hasPrefix("http://") || url.hasPrefix("https://")){
             url = "\(defaultUrlPrefix)\(url)"

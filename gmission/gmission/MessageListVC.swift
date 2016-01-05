@@ -25,19 +25,10 @@ class MessageListVM{
     let messages = ArrayForTableView<Message>()
     
     func refresh(done:F = nil){
-        self.messages.removeAll()
-//        self.messages.appendContentsOf([Message(jsonDict:["title":"a title"]),
-//            Message(jsonDict:["title":"b title"]),
-//            Message(jsonDict:["title":"c title"]),
-//            Message(jsonDict:["title":"d title"]),
-//            Message(jsonDict:["title":"e title"]),
-//            Message(jsonDict:["title":"f title"]),
-//            Message(jsonDict:["title":"g title"])])
-//        done?()
-//        return;
         let q = [ "filters" : [ ["name":"receiver_id","op":"eq","val":UserManager.currentUser.id] ] ]
         
         Message.query(q) { (messages:[Message])->Void in
+            self.messages.removeAll()
             self.messages.appendContentsOf(messages)
             done?()
         }
@@ -76,11 +67,14 @@ class MessageListVC: EnhancedVC {
                 print("invalid type")
             }
         }
+        self.showHUD("Loading ...")
+        binder.refreshThen { () -> Void in
+            self.hideHUD()
+        }
         
     }
     
     override func viewWillAppear(animated: Bool) {
-        binder.refreshTableContent()
     }
     
     func gotoHitView(hitId:Int){

@@ -28,13 +28,7 @@ class SelectionHitVM:HitVM{
             self.selections.removeAll()
             self.selections.appendContentsOf(selections)
             
-            let q = ["filters":[ ["name":"hit_id","op":"eq","val":self.hit.id] ] ]
-            Answer.query(q) { (answers:[Answer]) -> Void in
-                print("load answers", answers)
-                self.answers.removeAll()
-                self.answers.appendContentsOf(answers)
-                done?()
-            }
+            self.loadAnswers(done)
         }
     }
 }
@@ -46,7 +40,6 @@ class SelectionHitVC: HitVC {
     
     
     var vm:SelectionHitVM! = nil
-//    let binder:TableBinder<Hit> = TableBinder<Hit>()
     
     @IBOutlet weak var selectionTableView: UITableView!
     let binder:TableBinder<Selection> = TableBinder<Selection>()
@@ -108,7 +101,11 @@ class SelectionHitVC: HitVC {
                 print("cannot answer")
             }
         }
-        binder.refreshTableContent()
+        
+        self.showHUD("Loading HITs...")
+        binder.refreshThen { () -> Void in
+            self.hideHUD()
+        }
     }
     
     override func submitAnswer(){

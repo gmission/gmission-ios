@@ -50,7 +50,9 @@ class TextHitVC: HitVC {
             print("answer: \(answer.id) \(answer.brief) \(answer.created_on)")
             return cell
         }
+        self.showHUD("Loading...")
         binder.refreshThen{
+            self.hideHUD()
             if self.vm.isRequester{
                 print("is requester")
                 self.answerTableView.hidden = false

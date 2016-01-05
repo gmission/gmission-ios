@@ -1,3 +1,4 @@
 
 github "SwiftyJSON/SwiftyJSON"
+github "rs/SDWebImage"
 github "Alamofire/Alamofire" ~> 3.0

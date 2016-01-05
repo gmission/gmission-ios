@@ -9,6 +9,7 @@
 import UIKit
 
 import SwiftyJSON
+import WebImage
 
 
 class Attachment:JsonEntity{
@@ -27,16 +28,22 @@ class Attachment:JsonEntity{
             }
         }
     }
+    
+    var imageURL:String {return HTTP.imageURLForName(self.jsonDict["value"].stringValue)}
 }
 
 
 class ImageHitVM:HitVM{
     
-//    func refresh(done:F = nil){
-//        Hit.query{ (hits:[Hit])->Void in
-//            self.hits.appendContentsOf(hits)
-//        }
-//    }
+    func refresh(done:F = nil){
+        self.loadAnswers(done)
+    }
+}
+
+class ImageAnswerCell:UITableViewCell{
+    @IBOutlet weak var answerImageView: UIImageView!
+    @IBOutlet weak var createdOnLabel: UILabel!
+    @IBOutlet weak var workerNameLabel: UILabel!
 }
 
 class ImageHitVC: HitVC, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
@@ -48,21 +55,58 @@ class ImageHitVC: HitVC, UINavigationControllerDelegate, UIImagePickerController
     var vm:ImageHitVM! = nil
 //    let binder:TableBinder<Hit> = TableBinder<Hit>()
     @IBOutlet weak var viewForWorker: UIView!
-
     @IBOutlet weak var answerTableView: UITableView!
+    
+    let binder:TableBinder<Answer> = TableBinder<Answer>()
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = vm.hit.title
         self.textView.text = vm.hit.description
-        
-        if vm.isRequester{
-            viewForWorker.hidden = true
-            answerTableView.hidden = false
-            switchToRequester()
-        }else{
-            viewForWorker.hidden = false
-            answerTableView.hidden = true
+    
+        self.binder.bind(answerTableView, items: self.vm.answers, refreshFunc: vm.refresh)
+        self.binder.cellFunc = { indexPath in
+            let answer = self.vm.answers[indexPath.row]
+            let cell = self.answerTableView.dequeueReusableCellWithIdentifier("imageAnswerCell", forIndexPath: indexPath) as! ImageAnswerCell
+            
+            Attachment.getOne(answer.att_id, done: { (att:Attachment) -> Void in
+                let url = NSURL(string: att.imageURL)
+                print("set url \(url)")
+                
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    cell.answerImageView?.contentMode = UIViewContentMode.ScaleAspectFit
+                    let placeHolder = UIImage(named: "imgPlaceHolder")
+                    print("placeHolder\(placeHolder)")
+                    cell.answerImageView?.sd_setImageWithURL(url, placeholderImage: placeHolder)
+                })
+            })
+            cell.workerNameLabel.text = "worker"
+            cell.createdOnLabel.text = answer.created_on
+            return cell
         }
+        
+        
+        self.showHUD("Loading...")
+        binder.refreshThen { () -> Void in
+            self.hideHUD()
+//        if vm.isRequester{
+//            print("is requester")
+//            viewForWorker.hidden = true
+//            answerTableView.hidden = false
+//            switchToRequester()
+//        }else{
+            print("is NOT requester")
+            if self.vm.hasAnswered{
+                print("answered")
+                self.viewForWorker.hidden = true
+                self.answerTableView.hidden = false
+            }else{
+                print("has not answered")
+                self.viewForWorker.hidden = false
+                self.answerTableView.hidden = true
+            }
+//        }
+        }
+        
     }
     
     override func viewDidLayoutSubviews() {
@@ -119,8 +163,10 @@ class ImageHitVC: HitVC, UINavigationControllerDelegate, UIImagePickerController
                 let attDict:[String:AnyObject] = ["type":"image", "value":nameFromServer!]
                 let att = Attachment(jsonDict: JSON(attDict))
                 Attachment.postOne(att) { (att:Attachment) -> Void in
+                    print("attachment posted")
                     let answerDict:[String:AnyObject] = ["brief":"", "hit_id":self.vm.hit.id, "type":"image", "attachment_id":att.id,"worker_id":UserManager.currentUser.id]
                     self.vm.postAnswer(Answer(dict: answerDict)){
+                        print("answer posted")
                         self.hideHUD()
                         self.flashHUD("Done!", 1)
                         self.viewDidLoad()

@@ -21,6 +21,9 @@ class JsonEntity{
     class var restUrl:String{
         return "rest/\(urlname)"
     }
+    class var evalUrl:String{
+        return "rest/eval/\(urlname)"
+    }
 
     // these restful function can be put anywhere..
     static func getAll<T:JsonEntity>(done:([T])->Void){
@@ -49,6 +52,13 @@ class JsonEntity{
                 return T(jsonDict: json)
             })
             done(tArray)
+        }
+    }
+    
+    class func queryJSON<T:JsonEntity>(q:[String:AnyObject], done:(JSON, T?)->Void){ // the last T? is for template
+        let jsonQ = JSON(q)
+        HTTP.requestJSON(.GET, T.restUrl, ["q": "\(jsonQ)"], .URL, nil) { (jsonRes) -> () in
+            done(jsonRes, nil)
         }
     }
     
@@ -93,6 +103,51 @@ class Campaign:JsonEntity{
     override class var urlname:String{return "campaign"}
     var title:String{return jsonDict["title"].stringValue}
     var description:String{return jsonDict["brief"].stringValue}
+    
+    var hitCount:Int = 0
+    var workerCount:Int = 0
+    
+    func refreshDetail(done:F){
+        //"functions":[["name": "count", "field": "id"] ],  functions does not help as restless does not support function with filter
+        let q = [ "filters" :  [["name":"campaign_id","op":"eq","val":self.id] ],
+                    "limit":0]
+        
+        Hit.queryJSON(q){ (json:JSON, _:Hit?)->Void in
+            self.hitCount = json["num_results"].intValue
+            print("hitcount: \(self.hitCount) \(json)")
+            
+            CampaignUser.count(self.id, done: { (workerCount) -> () in
+            self.workerCount = workerCount
+            print("workercount: \(self.workerCount)")
+                done?()
+            })
+        }
+    }
+}
+
+
+class CampaignUser:JsonEntity{
+    override class var urlname:String{return "campaign_user"}
+    
+    class func count(campaignId:Int, done:(Int)->()){
+        let q = ["limit" : 1,
+                "filters" :  [["name":"campaign_id","op":"eq","val":campaignId],
+                              ["name":"role_id","op":"eq","val":2] ] ] // warning: hardcode
+        CampaignUser.queryJSON(q) { (json, t:CampaignUser?) -> Void in
+            print("campaign user query: \(json)")
+            done(json["num_results"].intValue)
+        }
+    }
+}
+
+
+
+class CampaignCell:UITableViewCell{
+    
+    @IBOutlet weak var detailLabel: UILabel!
+    @IBOutlet weak var titleLabel: UILabel!
+    @IBOutlet weak var workerCountLabel: UILabel!
+    @IBOutlet weak var hitCountLabel: UILabel!
 }
 
 class CampaignListVM{
@@ -110,11 +165,11 @@ class CampaignListVM{
     }
     
     func refresh(done:F = nil){
-        self.campaigns.removeAll()
 //        fillFakeContent()
 //        done?()
 //        return;
         Campaign.getAll{ (campaigns:[Campaign])->Void in
+            self.campaigns.removeAll()
             self.campaigns.appendContentsOf(campaigns)
             done?()
         }
@@ -134,9 +189,14 @@ class CampaignListVC: EnhancedVC {
 //        tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
         binder.bind(tableView, items: vm.campaigns, refreshFunc: vm.refresh)
         binder.cellFunc = { indexPath in
-            let cell = self.tableView.dequeueReusableCellWithIdentifier("cell", forIndexPath: indexPath)
+            let cell = self.tableView.dequeueReusableCellWithIdentifier("campaignCell", forIndexPath: indexPath) as! CampaignCell
             let campaign = self.vm.campaigns[indexPath.row]
-            cell.textLabel?.text = campaign.title
+            cell.titleLabel?.text = campaign.title
+            cell.detailLabel?.text = campaign.description
+            campaign.refreshDetail{
+                cell.hitCountLabel.text = "\(campaign.hitCount)"
+                cell.workerCountLabel.text = "\(campaign.workerCount)"
+            }
             return cell
         }
 //        binder.selectionFunc = {indexPath in
