@@ -39,6 +39,8 @@ class Hit:JsonEntity{
     var requester_id:Int{return jsonDict["requester_id"].intValue}
     var required_answer_count:Int{return jsonDict["required_answer_count"].intValue}
     var location_id:Int{return jsonDict["location_id"].intValue}
+    var status:String{return jsonDict["status"].stringValue}
+    var created_on:String{return jsonDict["created_on"].stringValue}
     var location:Location?
     func refreshLocation(done:F){
         Location.getOne(location_id) { (loc:Location) -> Void in

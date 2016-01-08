@@ -8,6 +8,7 @@
 
 import Foundation
 
+import GoogleMaps
 
 
 class AskVC:EnhancedVC, UINavigationControllerDelegate, UIImagePickerControllerDelegate{
@@ -24,6 +25,10 @@ class AskVC:EnhancedVC, UINavigationControllerDelegate, UIImagePickerControllerD
     @IBOutlet weak var maxAnswerTextField: UITextField!
     
     @IBOutlet weak var imageView: UIImageView!
+    
+    
+    var locName:String! = nil
+    var clLoc: CLLocation! = nil
     
     var imagePicker: UIImagePickerController!
     @IBAction func takePhotoClicked(sender: AnyObject) {
@@ -56,7 +61,7 @@ class AskVC:EnhancedVC, UINavigationControllerDelegate, UIImagePickerControllerD
     }
     
     func request(){
-        LocationManager.global.newLocation{ location in
+        LocationManager.global.newCustomLocation(locName, clLoc: clLoc){ location in
             var dict = self.hitDict()
             dict["location_id"] = location.id
             if let image = self.imageView.image{

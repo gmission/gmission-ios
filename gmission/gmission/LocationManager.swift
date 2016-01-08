@@ -92,7 +92,13 @@ class LocationManager: NSObject, CLLocationManagerDelegate{
     
     func newLocation(done:(Location)->()){
         self.getCurrentLocationName { (locName) -> () in
-            let coord = Coordinate(dict:LocationManager.coordDict(self.currentLoc))
+            var location:CLLocation
+            if self.currentLoc != nil {
+                location = self.currentLoc
+            }else{
+                location = CLLocation(latitude: 0, longitude: 0)
+            }
+            let coord = Coordinate(dict:LocationManager.coordDict(location))
             Coordinate.postOne(coord, done: { (coord:Coordinate) -> Void in
                 let loc = Location(dict: ["name":locName, "coordinate_id":coord.id])
                 Location.postOne(loc, done: { (loc:Location) -> Void in
@@ -100,6 +106,16 @@ class LocationManager: NSObject, CLLocationManagerDelegate{
                 })
             })
         }
+    }
+    
+    func newCustomLocation(locName:String, clLoc:CLLocation, done:(Location)->()){
+        let coord = Coordinate(dict:LocationManager.coordDict(clLoc))
+        Coordinate.postOne(coord, done: { (coord:Coordinate) -> Void in
+            let loc = Location(dict: ["name":locName, "coordinate_id":coord.id])
+            Location.postOne(loc, done: { (loc:Location) -> Void in
+                done(loc)
+            })
+        })
     }
     
     func needToPostLocation(loc:CLLocation)->Bool{
@@ -150,7 +166,7 @@ class LocationManager: NSObject, CLLocationManagerDelegate{
     }
     
     
-    func getLocationNameByCoord(coord:CLLocationCoordinate2D, callback:(String)->(), failed:()->()){
+    func getLocationNameByCoord(coord:CLLocationCoordinate2D, callback:(String)->(), failed:F=nil){
         let coder = GMSGeocoder()
         coder.reverseGeocodeCoordinate(coord, completionHandler: { (r:GMSReverseGeocodeResponse!, e:NSError!) -> Void in
             if let response = r{
@@ -159,7 +175,8 @@ class LocationManager: NSObject, CLLocationManagerDelegate{
                 callback(name)
             }else {
                 log("get location name failed\(e)")
-                failed()
+                callback("")
+                failed?()
             }
         })
     }

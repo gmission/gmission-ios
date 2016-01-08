@@ -44,24 +44,49 @@ class ImageAnswerCell:UITableViewCell{
     @IBOutlet weak var answerImageView: UIImageView!
     @IBOutlet weak var createdOnLabel: UILabel!
     @IBOutlet weak var workerNameLabel: UILabel!
+    internal var aspectConstraint : NSLayoutConstraint? {
+        didSet {
+            if oldValue != nil {
+                answerImageView.removeConstraint(oldValue!)
+            }
+            if aspectConstraint != nil {
+                answerImageView.addConstraint(aspectConstraint!)
+            }
+        }
+    }
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        aspectConstraint = nil
+    }
+
 }
 
 class ImageHitVC: HitVC, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
-//    @IBOutlet weak var tableView: UITableView!
-//    @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var textView: UITextView!
     
     @IBOutlet weak var imageView: UIImageView!
     var vm:ImageHitVM! = nil
-//    let binder:TableBinder<Hit> = TableBinder<Hit>()
     @IBOutlet weak var viewForWorker: UIView!
     @IBOutlet weak var answerTableView: UITableView!
+    
+    @IBOutlet weak var requesterBar: UIToolbar!
+    @IBOutlet weak var hitStatusLabel: UILabel!
+    @IBOutlet weak var hitCreatedOn: UILabel!
+    @IBOutlet weak var closeBtn: UIBarButtonItem!
     
     let binder:TableBinder<Answer> = TableBinder<Answer>()
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = vm.hit.title
         self.textView.text = vm.hit.description
+        self.hitStatusLabel.text = vm.hit.status
+        self.hitCreatedOn.text = vm.hit.created_on
+        
+//        answerTableView.estimatedRowHeight = 300
+//        answerTableView.rowHeight = UITableViewAutomaticDimension
+        let footerView = UIView(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
+        footerView.backgroundColor = UIColor.clearColor()
+        answerTableView.tableFooterView = footerView
     
         self.binder.bind(answerTableView, items: self.vm.answers, refreshFunc: vm.refresh)
         self.binder.cellFunc = { indexPath in
@@ -72,11 +97,22 @@ class ImageHitVC: HitVC, UINavigationControllerDelegate, UIImagePickerController
                 let url = NSURL(string: att.imageURL)
                 print("set url \(url)")
                 
+                    cell.answerImageView?.contentMode = UIViewContentMode.ScaleAspectFit
+                
+                    let placeHolder = UIImage(named: "imgPlaceHolder")!
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
                     cell.answerImageView?.contentMode = UIViewContentMode.ScaleAspectFit
-                    let placeHolder = UIImage(named: "imgPlaceHolder")
                     print("placeHolder\(placeHolder)")
-                    cell.answerImageView?.sd_setImageWithURL(url, placeholderImage: placeHolder)
+                    cell.answerImageView?.sd_setImageWithURL(url, placeholderImage: placeHolder, completed: { (image, error, cacheType, url) -> Void in
+//                        let aspect = image.size.width / image.size.height
+//                        print("aspect \(aspect)")
+////
+////                        for c in cell.constraints{
+////                        }
+//                        cell.aspectConstraint = NSLayoutConstraint(item: cell.answerImageView, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: cell.answerImageView, attribute: NSLayoutAttribute.Height, multiplier: aspect, constant: 0.0)
+//                        cell.aspectConstraint = NSLayoutConstraint(item: cell.answerImageView, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: cell.answerImageView, attribute: NSLayoutAttribute.Width, multiplier: 1/aspect, constant: 0.0)
+//                        cell.answerImageView.image = image
+                    })
                 })
             })
             cell.workerNameLabel.text = "worker"
@@ -88,23 +124,33 @@ class ImageHitVC: HitVC, UINavigationControllerDelegate, UIImagePickerController
         self.showHUD("Loading...")
         binder.refreshThen { () -> Void in
             self.hideHUD()
-//        if vm.isRequester{
-//            print("is requester")
-//            viewForWorker.hidden = true
-//            answerTableView.hidden = false
-//            switchToRequester()
-//        }else{
-            print("is NOT requester")
+            
+            self.requesterBar.hidden = !self.vm.isRequester
+            
+            if self.vm.hit.status == "closed"{
+                self.closeBtn.enabled = false
+            }
+            
             if self.vm.hasAnswered{
                 print("answered")
                 self.viewForWorker.hidden = true
                 self.answerTableView.hidden = false
+                self.navigationItem.rightBarButtonItem?.title = "Answered"
+                self.navigationItem.rightBarButtonItem?.enabled = false
             }else{
                 print("has not answered")
-                self.viewForWorker.hidden = false
-                self.answerTableView.hidden = true
+                if self.vm.isRequester{
+                    self.viewForWorker.hidden = true
+                    self.answerTableView.hidden = false
+                    self.navigationItem.rightBarButtonItem?.title = "Requested"
+                    self.navigationItem.rightBarButtonItem?.enabled = false
+                }else{
+                    self.viewForWorker.hidden = false
+                    self.answerTableView.hidden = true
+                    self.navigationItem.rightBarButtonItem?.title = "Submit"
+                    self.navigationItem.rightBarButtonItem?.enabled = true
+                }
             }
-//        }
         }
         
     }
@@ -138,7 +184,7 @@ class ImageHitVC: HitVC, UINavigationControllerDelegate, UIImagePickerController
         dismissViewControllerAnimated(true, completion: nil)
     }
     
-    override func closeHit(){
+    @IBAction override func closeHit(){
         print("children close, image")
         vm.hit.jsonDict["status"] = "closed"
         Hit.postOne(vm.hit) { (hit:Hit) -> Void in

@@ -31,6 +31,9 @@
 		9B88AEA21C3BF1F300441629 /* WebImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9B23D8201C3BEF73002241B2 /* WebImage.framework */; };
 		9B88AEA31C3BF1F300441629 /* WebImage.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9B23D8201C3BEF73002241B2 /* WebImage.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		9B88AEA51C3BF7EC00441629 /* placeholder-image.png in Resources */ = {isa = PBXBuildFile; fileRef = 9B88AEA41C3BF7EC00441629 /* placeholder-image.png */; };
+		9B88AEA71C3D04B200441629 /* PoI-100.png in Resources */ = {isa = PBXBuildFile; fileRef = 9B88AEA61C3D04B200441629 /* PoI-100.png */; };
+		9B88AEAE1C3F60E300441629 /* PoI-blue-100.png in Resources */ = {isa = PBXBuildFile; fileRef = 9B88AEAD1C3F60E300441629 /* PoI-blue-100.png */; };
+		9B88AEB01C3F9BD900441629 /* PoI-green-100.png in Resources */ = {isa = PBXBuildFile; fileRef = 9B88AEAF1C3F9BD900441629 /* PoI-green-100.png */; };
 		9B8CCC411C35987A006EBC04 /* HitListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B8CCC401C35987A006EBC04 /* HitListVC.swift */; };
 		9BB32A791C38F589007AEDB5 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 9BB32A781C38F589007AEDB5 /* icon.png */; };
 		9BD810C31C11F16E00CE09B9 /* CampaignListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BD810C21C11F16E00CE09B9 /* CampaignListVC.swift */; };
@@ -115,6 +118,9 @@
 		9B62DDC71C32D3BE00AD7F88 /* Text Box-100.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Text Box-100.png"; path = "resources/Text Box-100.png"; sourceTree = SOURCE_ROOT; };
 		9B62DDC81C32D3BE00AD7F88 /* Trophy-75.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Trophy-75.png"; path = "resources/Trophy-75.png"; sourceTree = SOURCE_ROOT; };
 		9B88AEA41C3BF7EC00441629 /* placeholder-image.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "placeholder-image.png"; path = "resources/placeholder-image.png"; sourceTree = SOURCE_ROOT; };
+		9B88AEA61C3D04B200441629 /* PoI-100.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "PoI-100.png"; path = "resources/PoI-100.png"; sourceTree = SOURCE_ROOT; };
+		9B88AEAD1C3F60E300441629 /* PoI-blue-100.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "PoI-blue-100.png"; path = "resources/PoI-blue-100.png"; sourceTree = SOURCE_ROOT; };
+		9B88AEAF1C3F9BD900441629 /* PoI-green-100.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "PoI-green-100.png"; path = "resources/PoI-green-100.png"; sourceTree = SOURCE_ROOT; };
 		9B8CCC401C35987A006EBC04 /* HitListVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HitListVC.swift; sourceTree = "<group>"; };
 		9BB32A781C38F589007AEDB5 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon.png; path = resources/icon.png; sourceTree = SOURCE_ROOT; };
 		9BD810C21C11F16E00CE09B9 /* CampaignListVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CampaignListVC.swift; sourceTree = "<group>"; };
@@ -193,6 +199,9 @@
 		9B62DDD21C32D3C700AD7F88 /* images */ = {
 			isa = PBXGroup;
 			children = (
+				9B88AEA61C3D04B200441629 /* PoI-100.png */,
+				9B88AEAD1C3F60E300441629 /* PoI-blue-100.png */,
+				9B88AEAF1C3F9BD900441629 /* PoI-green-100.png */,
 				9B88AEA41C3BF7EC00441629 /* placeholder-image.png */,
 				9BB32A781C38F589007AEDB5 /* icon.png */,
 				9B5C515F1C36C5E000AE5381 /* Message-75.png */,
@@ -320,7 +329,8 @@
 				9BE4F5D91C1170FB00371A3A /* Frameworks */,
 				9BE4F5DA1C1170FB00371A3A /* Resources */,
 				9BE4F60A1C1190B300371A3A /* Embed Frameworks */,
-				9BB32A7A1C397045007AEDB5 /* ShellScript */,
+				9BB32A7A1C397045007AEDB5 /* Run Script */,
+				9B88AEB11C3FA56000441629 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -374,12 +384,15 @@
 				9BE4F5EC1C1170FB00371A3A /* LaunchScreen.storyboard in Resources */,
 				9B62DDD11C32D3BE00AD7F88 /* Trophy-75.png in Resources */,
 				9B62DDD01C32D3BE00AD7F88 /* Text Box-100.png in Resources */,
+				9B88AEA71C3D04B200441629 /* PoI-100.png in Resources */,
 				9BE4F5E91C1170FB00371A3A /* Assets.xcassets in Resources */,
+				9B88AEAE1C3F60E300441629 /* PoI-blue-100.png in Resources */,
 				9B62DDCB1C32D3BE00AD7F88 /* Domain-100.png in Resources */,
 				9BE4F5E71C1170FB00371A3A /* Main.storyboard in Resources */,
 				9B88AEA51C3BF7EC00441629 /* placeholder-image.png in Resources */,
 				9B5C51621C36C5E000AE5381 /* User Female-75.png in Resources */,
 				9B5C515B1C366D9500AE5381 /* question_green.png in Resources */,
+				9B88AEB01C3F9BD900441629 /* PoI-green-100.png in Resources */,
 				9B5C51611C36C5E000AE5381 /* Message-75.png in Resources */,
 				9B5C515C1C366D9500AE5381 /* question_blue.png in Resources */,
 				9B3F80581C2ADB5100371C16 /* GoogleMaps.bundle in Resources */,
@@ -394,13 +407,27 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		9BB32A7A1C397045007AEDB5 /* ShellScript */ = {
+		9B88AEB11C3FA56000441629 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "buildNumber=$(/usr/libexec/PlistBuddy -c \"Print CFBundleVersion\" \"$INFOPLIST_FILE\")\nbuildNumber=$(($buildNumber + 1))\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $buildNumber\" \"$INFOPLIST_FILE\"    ";
+		};
+		9BB32A7A1C397045007AEDB5 /* Run Script */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Run Script";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;

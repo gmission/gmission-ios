@@ -43,12 +43,17 @@ class MapVC: EnhancedVC, GMSMapViewDelegate {
         self.title = "Map"
         self.navigationItem.setRightBarButtonItem(UIBarButtonItem(title: "HIT List", style: UIBarButtonItemStyle.Plain, target: self, action: "gotoHitList"), animated: true)
         // Do any additional setup after loading the view.
-        vm.refresh { () -> Void in
-            self.addHitsToMap()
-        }
         
         self.mapView.myLocationEnabled = true
         initMapWithFireBird()
+    }
+    
+    
+    override func viewWillAppear(animated: Bool) {
+        vm.refresh { () -> Void in
+            self.addHitsToMap()
+        }
+        super.viewWillAppear(animated)
     }
     
     func initMapWithFireBird(){
@@ -84,6 +89,7 @@ class MapVC: EnhancedVC, GMSMapViewDelegate {
     
     
     func addHitsToMap(){
+        self.mapView.clear()
         for hit in vm.hits.array{
             hit.refreshLocation{
                 self.addHitToMap(hit)
@@ -114,31 +120,35 @@ class MapVC: EnhancedVC, GMSMapViewDelegate {
     
     func mapView(mapView: GMSMapView!, didLongPressAtCoordinate coordinate: CLLocationCoordinate2D) {
         print("try to ask location")
-        var marker = GMSMarker(position: coordinate)
+        let marker = GMSMarker(position: coordinate)
         marker.icon = UIImage(named: "HitMarkerOwn")
         marker.map = self.mapView
         
         self.showHUD("Loading..")
-        LocationManager.global.getLocationNameByCoord(coordinate, callback: { (name) -> () in
+        LocationManager.global.getLocationNameByCoord(coordinate, callback: { (var name) -> () in
             print("ask location \(name)")
-            if name != "" {
-                self.askAboutLocation(name, coord: coordinate, onCancel: {()->() in
-                    marker.map = nil
-                })
-                self.hideHUD()
-            }else{
-                self.flashHUD("Cannot get any info about this locaiton!", 1)
-                dispatch_async(dispatch_get_main_queue() , { () -> Void in marker.map = nil })
+            if name == "" {
+                name = "Unknown place"
             }
-            }) { () -> () in
-                self.flashHUD("Cannot get any info about this locaiton!", 1)
-                dispatch_async(dispatch_get_main_queue() , { () -> Void in marker.map = nil })
-        }
+            self.askAboutLocation(name, coord: coordinate, onCancel: {()->() in
+                marker.map = nil
+            })
+            self.hideHUD()
+//            }else{
+//                self.flashHUD("Cannot get any info about this locaiton!", 1)
+//                dispatch_async(dispatch_get_main_queue() , { () -> Void in marker.map = nil })
+//            }
+//            }) { () -> () in
+//                self.flashHUD("Cannot get any info about this locaiton!", 1)
+//                dispatch_async(dispatch_get_main_queue() , { () -> Void in marker.map = nil })
+        })
     }
-    
+
     func askAboutLocation(name:String, coord:CLLocationCoordinate2D, onCancel:(()->())? = nil){
         let mainStoryboard = UIStoryboard(name: "Main", bundle: NSBundle.mainBundle())
         let vc : AskVC = mainStoryboard.instantiateViewControllerWithIdentifier("AskVC") as! AskVC
+        vc.locName = name
+        vc.clLoc = CLLocation(latitude: coord.latitude, longitude: coord.longitude)
         self.navigationController?.pushViewController(vc, animated: true)
     }
     

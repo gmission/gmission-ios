@@ -42,6 +42,11 @@ class SelectionHitVC: HitVC {
     var vm:SelectionHitVM! = nil
     
     @IBOutlet weak var selectionTableView: UITableView!
+    @IBOutlet weak var requesterBar: UIToolbar!
+    
+    @IBOutlet weak var hitStatusLabel: UILabel!
+    @IBOutlet weak var hitCreatedOn: UILabel!
+    @IBOutlet weak var closeBtn: UIBarButtonItem!
     let binder:TableBinder<Selection> = TableBinder<Selection>()
     
     override func viewDidLayoutSubviews() {
@@ -52,7 +57,9 @@ class SelectionHitVC: HitVC {
         super.viewDidLoad()
 //        titleLabel.text = vm.hit.title
         descriptionLabel.text = vm.hit.description
-        
+        self.hitStatusLabel.text = vm.hit.status
+        self.hitCreatedOn.text = vm.hit.created_on
+        selectionTableView.tableFooterView = UIView(frame: CGRect.zero)
         
         self.binder.bind(selectionTableView, items: self.vm.selections, refreshFunc: vm.refresh)
         self.binder.cellFunc = { indexPath in
@@ -65,22 +72,16 @@ class SelectionHitVC: HitVC {
                 print("answered", answeredSelections, selection.id )
                 if answeredSelections.contains(selection.id){
                     cell.detailTextLabel?.text = "✓"
+                    cell.detailTextLabel?.textColor = UIColor.grayColor()
                 }
             }else if self.vm.isRequester{
                 print("TODO")
-                
+                let count = self.vm.answers.array.filter{$0.selection_id==selection.id}.count
+                cell.detailTextLabel?.text = "\(count)"
             }
             
             print("selection: \(selection.id) \(selection.brief)")
             return cell
-            
-//            let answer = self.vm.answers[indexPath.row]
-//            let cellId =  "textSelectionCell"
-//            let cell = self.selectionTableView.dequeueReusableCellWithIdentifier(cellId, forIndexPath: indexPath)
-//            cell.textLabel?.text = answer.brief
-//            cell.detailTextLabel?.text = answer.created_on
-//            print("answer: \(answer.id) \(answer.brief) \(answer.created_on)")
-//            return cell
         }
         self.binder.selectionFunc = { indexPath in
             if self.vm.canAnswer{
@@ -93,6 +94,7 @@ class SelectionHitVC: HitVC {
                     self.vm.selected.removeAtIndex(self.vm.selected.indexOf(selection.id)!)
                 }else{
                     cell.detailTextLabel?.text =  "✓"
+                    cell.detailTextLabel?.textColor = UIColor.blueColor()
                     self.vm.selected.append(selection.id)
                 }
                 
@@ -105,13 +107,34 @@ class SelectionHitVC: HitVC {
         self.showHUD("Loading HITs...")
         binder.refreshThen { () -> Void in
             self.hideHUD()
+            
+            self.requesterBar.hidden = !self.vm.isRequester
+            
+            if self.vm.hit.status == "closed"{
+                self.closeBtn.enabled = false
+            }
+            
+            if self.vm.hasAnswered{
+                print("answered")
+                self.navigationItem.rightBarButtonItem?.title = "Answered"
+                self.navigationItem.rightBarButtonItem?.enabled = false
+            }else{
+                print("has not answered")
+                if self.vm.isRequester{
+                    self.navigationItem.rightBarButtonItem?.title = "Requested"
+                    self.navigationItem.rightBarButtonItem?.enabled = false
+                }else{
+                    self.navigationItem.rightBarButtonItem?.title = "Submit"
+                    self.navigationItem.rightBarButtonItem?.enabled = true
+                }
+            }
         }
     }
     
     override func submitAnswer(){
         print("children submit answer, selection")
         for selectionID in vm.selected{
-            let answerDict:[String:AnyObject] = ["brief":selectionID, "hit_id":vm.hit.id, "type":"text", "worker_id":UserManager.currentUser.id]
+            let answerDict:[String:AnyObject] = ["brief":selectionID, "hit_id":vm.hit.id, "type":"selection", "worker_id":UserManager.currentUser.id]
             let done:F = (selectionID == vm.selected.last!) ? {
                 self.viewDidLoad()
                 self.viewWillAppear(true)

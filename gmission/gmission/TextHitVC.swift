@@ -26,6 +26,10 @@ class TextHitVC: HitVC {
     @IBOutlet weak var answerTextField: UITextField!
     @IBOutlet weak var answerLabel: UILabel!
     var vm:TextHitVM! = nil
+    @IBOutlet weak var requesterBar: UIToolbar!
+    @IBOutlet weak var hitStatusLabel: UILabel!
+    @IBOutlet weak var hitCreatedOn: UILabel!
+    @IBOutlet weak var closeBtn: UIBarButtonItem!
     
     @IBOutlet weak var answerTableView: UITableView!
     let binder:TableBinder<Answer> = TableBinder<Answer>()
@@ -38,7 +42,9 @@ class TextHitVC: HitVC {
         super.viewDidLoad()
         self.title = vm.hit.title
         descriptionLabel.text = vm.hit.description
-        
+        self.hitStatusLabel.text = vm.hit.status
+        self.hitCreatedOn.text = vm.hit.created_on
+        answerTableView.tableFooterView = UIView(frame: CGRect.zero)
         
         self.binder.bind(answerTableView, items: self.vm.answers, refreshFunc: vm.loadAnswers)
         self.binder.cellFunc = { indexPath in
@@ -53,17 +59,34 @@ class TextHitVC: HitVC {
         self.showHUD("Loading...")
         binder.refreshThen{
             self.hideHUD()
-            if self.vm.isRequester{
-                print("is requester")
+            self.requesterBar.hidden = !self.vm.isRequester
+            
+            if self.vm.hit.status == "closed"{
+                self.closeBtn.enabled = false
+            }
+            
+            if self.vm.hasAnswered{
+                print("answered")
+                 self.answerTextField.hidden = true
+                self.answerLabel.hidden =  true
                 self.answerTableView.hidden = false
-                self.answerTextField.hidden = true
-                self.answerLabel.hidden = true
+                self.navigationItem.rightBarButtonItem?.title = "Answered"
+                self.navigationItem.rightBarButtonItem?.enabled = false
             }else{
-                print("is not requester")
-                self.answerTableView.hidden = true
-                self.answerTextField.hidden = false
-                self.answerLabel.hidden = false
-                self.answerTextField.becomeFirstResponder()
+                print("has not answered")
+                if self.vm.isRequester{
+                    self.answerLabel.hidden =  true
+                    self.answerTextField.hidden = true
+                    self.answerTableView.hidden = false
+                    self.navigationItem.rightBarButtonItem?.title = "Requested"
+                    self.navigationItem.rightBarButtonItem?.enabled = false
+                }else{
+                    self.answerTableView.hidden = true
+                    self.answerTextField.hidden = false
+                    self.answerLabel.hidden =  false
+                    self.navigationItem.rightBarButtonItem?.title = "Submit"
+                    self.navigationItem.rightBarButtonItem?.enabled = true
+                }
             }
         }
     }

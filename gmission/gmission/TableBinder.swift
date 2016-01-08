@@ -42,7 +42,7 @@ class TableBinder<T>: NSObject,UITableViewDataSource, UITableViewDelegate {
         refreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh")
         refreshControl.addTarget(self, action: "refreshTableContent:", forControlEvents: UIControlEvents.ValueChanged)
         tableView.addSubview(refreshControl)
-        tableView.tableFooterView = UIView(frame: CGRect.zero)
+//        tableView.tableFooterView = UIView(frame: CGRect.zero)
     }
     
     var cellFunc: ((NSIndexPath)->UITableViewCell)!
