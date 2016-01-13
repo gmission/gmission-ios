@@ -4,14 +4,17 @@
 - The iOS client for gMission(client in below) is an iOS app written in Swift.
 - The client is also opensource. 
 
+
 ###Screenshots
+
+
+<img src="https://www.dropbox.com/s/7wbe8p5eexdtjgo/campaigns.png?dl=1" alt="Drawing" style="width: 200px;"/>
+
 
 - campaigns:
 ![alt tag](https://www.dropbox.com/s/7wbe8p5eexdtjgo/campaigns.png?dl=1 )
 
-```html
-<img src="https://www.dropbox.com/s/7wbe8p5eexdtjgo/campaigns.png?dl=1" alt="Drawing" style="width: 200px;"/>
-```
+
 
 
 
