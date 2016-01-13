@@ -25,7 +25,8 @@ class MessageListVM{
     let messages = ArrayForTableView<Message>()
     
     func refresh(done:F = nil){
-        let q = [ "filters" : [ ["name":"receiver_id","op":"eq","val":UserManager.currentUser.id] ] ]
+        let q = [ "filters" : [ ["name":"receiver_id","op":"eq","val":UserManager.currentUser.id] ],
+                "order_by":[ ["field":"created_on", "direction":"desc"] ] ]
         
         Message.query(q) { (messages:[Message])->Void in
             self.messages.removeAll()

@@ -46,6 +46,12 @@ class User{
 }
 
 
+class BaiduPushInfo:JsonEntity{
+    override class var urlname:String {return "baidu_push_info"}
+    
+}
+
+
 class UserManager{
     static let global = UserManager()
     static var currentUser:User! = nil
@@ -55,7 +61,23 @@ class UserManager{
         settings.save("", forKey: "loginPassword")
         settings.save("", forKey: "loginToken")
         settings.save("", forKey: "loginUserID")
+        settings.save("", forKey: "baidu_info_posted")
         currentUser = nil
+    }
+    
+    func postPushInfo(){
+        let bdPosted = settings.load("baidu_info_posted")
+        
+        if bdPosted == ""{
+            let uid = UserManager.currentUser.id
+            let buid = SettingManager.global.load("baidu_user_id") ?? ""
+            let bcid = SettingManager.global.load("baidu_channel_id") ?? ""
+            let baiduPushInfo = BaiduPushInfo(jsonDict:["baidu_user_id":buid, "baidu_channel_id":bcid, "user_id":uid, "type":"ios", "is_valid":true])
+            BaiduPushInfo.postOne(baiduPushInfo) { (bpi:BaiduPushInfo) -> Void in
+                print("bpi posted")
+                settings.save("true", forKey: "baidu_info_posted")
+            }
+        }
     }
     
     func saveUserInfo(user:User){
@@ -87,6 +109,7 @@ class UserManager{
         
         UserManager.currentUser = user
         saveUserInfo(user)
+        postPushInfo()
     }
     
     
