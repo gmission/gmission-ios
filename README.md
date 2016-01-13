@@ -7,7 +7,14 @@
 ###Screenshots
 
 - campaigns:
-[[ https://www.dropbox.com/s/7wbe8p5eexdtjgo/campaigns.png?dl=1 ]]
+![alt tag](https://www.dropbox.com/s/7wbe8p5eexdtjgo/campaigns.png?dl=1 )
+
+```html
+<img src="https://www.dropbox.com/s/7wbe8p5eexdtjgo/campaigns.png?dl=1" alt="Drawing" style="width: 200px;"/>
+```
+
+
+
 
 
 
