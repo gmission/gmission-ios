@@ -7,7 +7,7 @@
 
 ###Screenshots
 
-- campaigns list:
+- campaigns:
 - 
 <img src="https://www.dropbox.com/s/7wbe8p5eexdtjgo/campaigns.png?dl=1" alt="campaigns" width="320"/>
 
