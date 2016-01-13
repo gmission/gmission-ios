@@ -5,7 +5,26 @@
 - The client is also opensource. 
 
 
-###Screenshots
+## Features:
+- Join campaigns and submit answers. 
+- Long press on the map to request new image HIT.
+- Notifications when there are new answers of your HITs and new HITs requested near you.
+
+
+## iOS development:
+- Carthage is used to manage 3rd party libraries.
+- Baidu push service is used to push notifications to devices.
+- Google map provides the map service.
+- The minimum required iOS version is 8.0.
+
+
+### Notice:
+All iOS apps need apple's approval to be in the appstore. Apple usually takes 2 week to check a new submission, so the version in appstore is older than the latest code in this repo. If you want to try new functions, please try build by yourself. 
+
+
+
+
+##Screenshots
 
 - campaigns:
 - 
