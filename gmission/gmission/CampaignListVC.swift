@@ -13,137 +13,7 @@ import SwiftyJSON
 typealias F = (()->Void)?
 
 
-
-class JsonEntity{
-    class var urlname:String{
-        return "name"
-    }
-    class var restUrl:String{
-        return "rest/\(urlname)"
-    }
-    class var evalUrl:String{
-        return "rest/eval/\(urlname)"
-    }
-
-    // these restful function can be put anywhere..
-    static func getAll<T:JsonEntity>(done:([T])->Void){
-        HTTP.requestJSON(.GET, T.restUrl) { (jsonRes) -> () in
-            let tArray = jsonRes["objects"].arrayValue.map({ (json) -> T in
-                return T(jsonDict: json)
-            })
-            done(tArray)
-        }
-    }
-    
-    static func getOne<T:JsonEntity>(id:Int, done:(T)->Void){
-        HTTP.requestJSON(.GET, "\(T.restUrl)/\(id)"){ (jsonRes) -> () in
-            done(T(jsonDict: jsonRes))
-//            let tArray = jsonRes["objects"].arrayValue.map({ (json) -> T in
-//                return T(jsonDict: json)
-//            })
-//            done(tArray)
-        }
-    }
-    
-    static func query<T:JsonEntity>(q:[String:AnyObject], done:([T])->Void){
-        let jsonQ = JSON(q)
-        HTTP.requestJSON(.GET, T.restUrl, ["q": "\(jsonQ)"], .URL, nil) { (jsonRes) -> () in
-            let tArray = jsonRes["objects"].arrayValue.map({ (json) -> T in
-                return T(jsonDict: json)
-            })
-            done(tArray)
-        }
-    }
-    
-    class func queryJSON<T:JsonEntity>(q:[String:AnyObject], done:(JSON, T?)->Void){ // the last T? is for template
-        let jsonQ = JSON(q)
-        HTTP.requestJSON(.GET, T.restUrl, ["q": "\(jsonQ)"], .URL, nil) { (jsonRes) -> () in
-            done(jsonRes, nil)
-        }
-    }
-    
-    static func postOne<T:JsonEntity>(t:T, done:F){
-        HTTP.requestJSON(.POST, T.restUrl, t.jsonDict.dictionaryObject!, .JSON, nil) { (json) -> () in
-            print("posted \(json)")
-            done?()
-        }
-    }
-    
-    static func postOne<T:JsonEntity>(t:T, done:(T)->Void){
-        HTTP.requestJSON(.POST, T.restUrl, t.jsonDict.dictionaryObject!, .JSON, nil) { (json) -> () in
-            print("posted \(json)")
-            let retT = T(jsonDict: json)
-            done(retT)
-        }
-    }
-    
-    
-    static func put<T:JsonEntity>(t:T, done:F){
-        HTTP.requestJSON(.PUT, "\(T.restUrl)/\(t.id)", t.jsonDict.dictionaryObject!, .JSON, nil) { (json) -> () in
-            print("put \(json)")
-            done?()
-        }
-    }
-    
-    var jsonDict:JSON
-    var id:Int{return jsonDict["id"].intValue}
-//    var dictToPost:[String:AnyObject]{return [String:AnyObject]()}
-    
-    required init(jsonDict:JSON){
-        self.jsonDict = jsonDict
-    }
-    
-    convenience init(dict:[String:AnyObject]){
-        let json = JSON(dict)
-        self.init(jsonDict:json)
-    }
-}
-
-class Campaign:JsonEntity{
-    override class var urlname:String{return "campaign"}
-    var title:String{return jsonDict["title"].stringValue}
-    var description:String{return jsonDict["brief"].stringValue}
-    
-    var hitCount:Int = 0
-    var workerCount:Int = 0
-    
-    func refreshDetail(done:F){
-        //"functions":[["name": "count", "field": "id"] ],  functions does not help as restless does not support function with filter
-        let q = [ "filters" :  [["name":"campaign_id","op":"eq","val":self.id] ],
-                    "limit":0]
-        
-        Hit.queryJSON(q){ (json:JSON, _:Hit?)->Void in
-            self.hitCount = json["num_results"].intValue
-            print("hitcount: \(self.hitCount) \(json)")
-            
-            CampaignUser.count(self.id, done: { (workerCount) -> () in
-            self.workerCount = workerCount
-            print("workercount: \(self.workerCount)")
-                done?()
-            })
-        }
-    }
-}
-
-
-class CampaignUser:JsonEntity{
-    override class var urlname:String{return "campaign_user"}
-    
-    class func count(campaignId:Int, done:(Int)->()){
-        let q = ["limit" : 1,
-                "filters" :  [["name":"campaign_id","op":"eq","val":campaignId],
-                              ["name":"role_id","op":"eq","val":2] ] ] // warning: hardcode
-        CampaignUser.queryJSON(q) { (json, t:CampaignUser?) -> Void in
-            print("campaign user query: \(json)")
-            done(json["num_results"].intValue)
-        }
-    }
-}
-
-
-
 class CampaignCell:UITableViewCell{
-    
     @IBOutlet weak var detailLabel: UILabel!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var workerCountLabel: UILabel!
@@ -175,6 +45,7 @@ class CampaignListVM{
         }
     }
 }
+
 
 class CampaignListVC: EnhancedVC {
     @IBOutlet weak var tableView: UITableView!

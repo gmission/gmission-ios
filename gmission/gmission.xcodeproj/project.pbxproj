@@ -76,6 +76,7 @@
 		9BE4F6071C1190B300371A3A /* Alamofire.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9BE4F6021C1185C100371A3A /* Alamofire.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		9BE4F6081C1190B300371A3A /* SwiftyJSON.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BE4F6031C1185C100371A3A /* SwiftyJSON.framework */; };
 		9BE4F6091C1190B300371A3A /* SwiftyJSON.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9BE4F6031C1185C100371A3A /* SwiftyJSON.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		9BF151E11C4F9E56004E4620 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BF151E01C4F9E56004E4620 /* Models.swift */; };
 		9BF92D3E1C38D9EC003597E3 /* AskVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BF92D3D1C38D9EC003597E3 /* AskVC.swift */; };
 /* End PBXBuildFile section */
 
@@ -166,6 +167,7 @@
 		9BE4F6001C11826D00371A3A /* HTTP.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTP.swift; sourceTree = "<group>"; };
 		9BE4F6021C1185C100371A3A /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Carthage/Build/iOS/Alamofire.framework; sourceTree = SOURCE_ROOT; };
 		9BE4F6031C1185C100371A3A /* SwiftyJSON.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftyJSON.framework; path = Carthage/Build/iOS/SwiftyJSON.framework; sourceTree = SOURCE_ROOT; };
+		9BF151E01C4F9E56004E4620 /* Models.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		9BF92D3D1C38D9EC003597E3 /* AskVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AskVC.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -296,6 +298,7 @@
 				9BE4F5DF1C1170FB00371A3A /* AppDelegate.swift */,
 				9BE4F5E51C1170FB00371A3A /* Main.storyboard */,
 				9BE4F6001C11826D00371A3A /* HTTP.swift */,
+				9BF151E01C4F9E56004E4620 /* Models.swift */,
 				9BE4F5FE1C11777600371A3A /* TableBinder.swift */,
 				9BE4F5FD1C11732B00371A3A /* ViewControllers */,
 				9BE4F5E81C1170FB00371A3A /* Assets.xcassets */,
@@ -457,6 +460,7 @@
 				9BD810FA1C1411E100CE09B9 /* PushNotificationManager.swift in Sources */,
 				9BE4F5E01C1170FB00371A3A /* AppDelegate.swift in Sources */,
 				9B3F805B1C2D65E700371C16 /* HitVC.swift in Sources */,
+				9BF151E11C4F9E56004E4620 /* Models.swift in Sources */,
 				9BE4F5F41C1172BB00371A3A /* EnhancedVC.swift in Sources */,
 				9BD810C31C11F16E00CE09B9 /* CampaignListVC.swift in Sources */,
 				9BE4F5FF1C11777600371A3A /* TableBinder.swift in Sources */,
@@ -589,6 +593,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
@@ -617,6 +622,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",

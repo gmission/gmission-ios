@@ -12,25 +12,6 @@ import SwiftyJSON
 import WebImage
 
 
-class Attachment:JsonEntity{
-    override class var urlname:String{return "attachment"}
-    var image:UIImage!
-    
-    static func newWithImage(image:UIImage, done:(Attachment)->()){
-        let imageData = UIImageJPEGRepresentation(image, 0.8)!
-        HTTP.uploadImage(imageData, fileName: "ios.jpg") { (nameFromServer, error) -> () in
-            print("image uploaded")
-                let attDict:[String:AnyObject] = ["type":"image", "value":nameFromServer!]
-                let att = Attachment(jsonDict: JSON(attDict))
-                Attachment.postOne(att) { (att:Attachment) -> Void in
-                print("att posted")
-                    done(att)
-            }
-        }
-    }
-    
-    var imageURL:String {return HTTP.imageURLForName(self.jsonDict["value"].stringValue)}
-}
 
 
 class ImageHitVM:HitVM{
@@ -44,6 +25,7 @@ class ImageAnswerCell:UITableViewCell{
     @IBOutlet weak var answerImageView: UIImageView!
     @IBOutlet weak var createdOnLabel: UILabel!
     @IBOutlet weak var workerNameLabel: UILabel!
+    @IBOutlet weak var answerImageButton: UIButton!
     internal var aspectConstraint : NSLayoutConstraint? {
         didSet {
             if oldValue != nil {
@@ -58,6 +40,36 @@ class ImageAnswerCell:UITableViewCell{
         super.prepareForReuse()
         aspectConstraint = nil
     }
+    
+    var fullImgMask:UIView = UIView()
+    
+    @IBAction func fullScreenImage(sender: AnyObject) {
+        print("full")
+        
+        let fullFrame:CGRect = UIScreen.mainScreen().bounds
+        fullImgMask.backgroundColor = UIColor.blackColor()
+        fullImgMask.frame = fullFrame
+        self.window!.addSubview(fullImgMask)
+//        let imageView = UIImageView(frame: fullFrame)
+        
+//        self.window!.addSubview(self.fullImgBlurMask)
+        let image = self.answerImageButton.imageView?.image
+        let imgButton = UIButton(frame: fullFrame)
+        imgButton.setImage(image, forState:UIControlState.Normal)
+        imgButton.imageView?.contentMode = UIViewContentMode.ScaleAspectFit
+        imgButton.backgroundColor = UIColor.clearColor();
+        imgButton.addTarget(self, action: "dismissHelper:", forControlEvents: UIControlEvents.TouchUpInside)
+        self.window!.addSubview(imgButton)
+        
+        
+    }
+    
+    func dismissHelper(sender:UIButton)
+    {
+        self.fullImgMask.removeFromSuperview()
+        sender.removeFromSuperview()
+    }
+    
 
 }
 
@@ -97,13 +109,13 @@ class ImageHitVC: HitVC, UINavigationControllerDelegate, UIImagePickerController
                 let url = NSURL(string: att.imageURL)
                 print("set url \(url)")
                 
-                    cell.answerImageView?.contentMode = UIViewContentMode.ScaleAspectFit
+                    cell.answerImageButton.imageView?.contentMode = UIViewContentMode.ScaleAspectFit
                 
                     let placeHolder = UIImage(named: "imgPlaceHolder")!
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                    cell.answerImageView?.contentMode = UIViewContentMode.ScaleAspectFit
+                    cell.answerImageButton.imageView?.contentMode = UIViewContentMode.ScaleAspectFit
                     print("placeHolder\(placeHolder)")
-                    cell.answerImageView?.sd_setImageWithURL(url, placeholderImage: placeHolder, completed: { (image, error, cacheType, url) -> Void in
+                    cell.answerImageButton.sd_setImageWithURL(url, forState: .Normal, placeholderImage: placeHolder)
 //                        let aspect = image.size.width / image.size.height
 //                        print("aspect \(aspect)")
 ////
@@ -112,7 +124,7 @@ class ImageHitVC: HitVC, UINavigationControllerDelegate, UIImagePickerController
 //                        cell.aspectConstraint = NSLayoutConstraint(item: cell.answerImageView, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: cell.answerImageView, attribute: NSLayoutAttribute.Height, multiplier: aspect, constant: 0.0)
 //                        cell.aspectConstraint = NSLayoutConstraint(item: cell.answerImageView, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: cell.answerImageView, attribute: NSLayoutAttribute.Width, multiplier: 1/aspect, constant: 0.0)
 //                        cell.answerImageView.image = image
-                    })
+//                    })
                 })
             })
             cell.workerNameLabel.text = "worker"
@@ -129,9 +141,11 @@ class ImageHitVC: HitVC, UINavigationControllerDelegate, UIImagePickerController
             
             if self.vm.hit.status == "closed"{
                 self.closeBtn.enabled = false
-            }
-            
-            if self.vm.hasAnswered{
+                self.viewForWorker.hidden = true
+                self.answerTableView.hidden = false
+                self.navigationItem.rightBarButtonItem?.title = "Closed"
+                self.navigationItem.rightBarButtonItem?.enabled = false
+            }else if self.vm.hasAnswered{
                 print("answered")
                 self.viewForWorker.hidden = true
                 self.answerTableView.hidden = false

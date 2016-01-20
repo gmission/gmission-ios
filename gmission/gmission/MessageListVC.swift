@@ -9,17 +9,6 @@
 import UIKit
 
 
-class Message:JsonEntity{
-    override class var urlname:String{return "message"}
-    var type:String{return jsonDict["type"].stringValue}
-    var status:String{return jsonDict["status"].stringValue}
-    var content:String{return jsonDict["content"].stringValue}
-    var att_type:String{return jsonDict["att_type"].stringValue}
-    var attachment:String{return jsonDict["attachment"].stringValue}
-    
-    var created_on:String{return jsonDict["created_on"].stringValue}
-}
-
 class MessageListVM{
     static let global = MessageListVM()
     let messages = ArrayForTableView<Message>()

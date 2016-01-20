@@ -63,9 +63,12 @@ class TextHitVC: HitVC {
             
             if self.vm.hit.status == "closed"{
                 self.closeBtn.enabled = false
-            }
-            
-            if self.vm.hasAnswered{
+                 self.answerTextField.hidden = true
+                self.answerLabel.hidden =  true
+                self.answerTableView.hidden = false
+                self.navigationItem.rightBarButtonItem?.title = "Closed"
+                self.navigationItem.rightBarButtonItem?.enabled = false
+            }else if self.vm.hasAnswered{
                 print("answered")
                  self.answerTextField.hidden = true
                 self.answerLabel.hidden =  true

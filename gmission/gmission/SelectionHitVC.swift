@@ -12,10 +12,6 @@ import SwiftyJSON
 
 
 
-class Selection:JsonEntity{
-    override class var urlname:String{return "selection"}
-    var brief:String{return jsonDict["brief"].stringValue}
-}
 
 class SelectionHitVM:HitVM{
     let selections = ArrayForTableView<Selection>()
@@ -44,6 +40,7 @@ class SelectionHitVC: HitVC {
     @IBOutlet weak var selectionTableView: UITableView!
     @IBOutlet weak var requesterBar: UIToolbar!
     
+    @IBOutlet weak var answerLimitLabel: UILabel!
     @IBOutlet weak var hitStatusLabel: UILabel!
     @IBOutlet weak var hitCreatedOn: UILabel!
     @IBOutlet weak var closeBtn: UIBarButtonItem!
@@ -60,6 +57,14 @@ class SelectionHitVC: HitVC {
         self.hitStatusLabel.text = vm.hit.status
         self.hitCreatedOn.text = vm.hit.created_on
         selectionTableView.tableFooterView = UIView(frame: CGRect.zero)
+        
+        var answerLimit:String
+        if vm.hit.min_choices == vm.hit.max_choices{
+            answerLimit = "\(vm.hit.min_choices) answer"
+        }else{
+            answerLimit = "\(vm.hit.min_choices) to \(vm.hit.max_choices) answers"
+        }
+        answerLimitLabel.text = "Choose \(answerLimit) from below."
         
         self.binder.bind(selectionTableView, items: self.vm.selections, refreshFunc: vm.refresh)
         self.binder.cellFunc = { indexPath in
@@ -110,11 +115,11 @@ class SelectionHitVC: HitVC {
             
             self.requesterBar.hidden = !self.vm.isRequester
             
-            if self.vm.hit.status == "closed"{
+            if self.vm.closed{
                 self.closeBtn.enabled = false
-            }
-            
-            if self.vm.hasAnswered{
+                self.navigationItem.rightBarButtonItem?.title = "Closed"
+                self.navigationItem.rightBarButtonItem?.enabled = false
+            } else if self.vm.hasAnswered{
                 print("answered")
                 self.navigationItem.rightBarButtonItem?.title = "Answered"
                 self.navigationItem.rightBarButtonItem?.enabled = false
@@ -132,6 +137,15 @@ class SelectionHitVC: HitVC {
     }
     
     override func submitAnswer(){
+        if vm.selected.count < vm.hit.min_choices{
+            self.flashHUD("need to choose more", 1)
+            return
+        }
+        if vm.selected.count > vm.hit.max_choices{
+            self.flashHUD("need to choose less", 1)
+            return
+        }
+        
         print("children submit answer, selection")
         for selectionID in vm.selected{
             let answerDict:[String:AnyObject] = ["brief":selectionID, "hit_id":vm.hit.id, "type":"selection", "worker_id":UserManager.currentUser.id]

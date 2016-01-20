@@ -40,6 +40,7 @@ class EnhancedVC: UIViewController {
         self.view.addSubview(self.hud)
         hud.labelText = content
         hud.mode = MBProgressHUDMode.Text
+        hud.show(true)
         hud.hide(true, afterDelay: time)
     }
     
