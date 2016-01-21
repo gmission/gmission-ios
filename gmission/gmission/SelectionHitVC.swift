@@ -11,8 +11,6 @@ import UIKit
 import SwiftyJSON
 
 
-
-
 class SelectionHitVM:HitVM{
 
 }
@@ -20,7 +18,6 @@ class SelectionHitVM:HitVM{
 class SelectionHitVC: HitVC {
 //    @IBOutlet weak var tableView: UITableView!
 //    @IBOutlet weak var titleLabel: UILabel!
-    @IBOutlet weak var descriptionLabel: UITextView!
     
     
     var selectionVM:SelectionHitVM{return vm as! SelectionHitVM}
@@ -29,21 +26,15 @@ class SelectionHitVC: HitVC {
     @IBOutlet weak var requesterBar: UIToolbar!
     
     @IBOutlet weak var answerLimitLabel: UILabel!
-    @IBOutlet weak var hitStatusLabel: UILabel!
-    @IBOutlet weak var hitCreatedOn: UILabel!
     @IBOutlet weak var closeBtn: UIBarButtonItem!
     let binder:TableBinder<Selection> = TableBinder<Selection>()
     
     override func viewDidLayoutSubviews() {
-        self.descriptionLabel.contentOffset = CGPointZero;
+//        self.descriptionLabel.contentOffset = CGPointZero;
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-//        titleLabel.text = vm.hit.title
-        descriptionLabel.text = vm.hit.description
-        self.hitStatusLabel.text = vm.hit.status
-        self.hitCreatedOn.text = vm.hit.created_on
         selectionTableView.tableFooterView = UIView(frame: CGRect.zero)
         
         var answerLimit:String
