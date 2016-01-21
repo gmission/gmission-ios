@@ -14,19 +14,7 @@ import SwiftyJSON
 
 
 class SelectionHitVM:HitVM{
-    let selections = ArrayForTableView<Selection>()
-    
-    var selected = [Int]()
-    
-    func refresh(done:F = nil){
-        let q = ["filters":[ ["name":"hit_id","op":"eq","val":self.hit.id] ] ]
-        Selection.query(q){ (selections:[Selection])->Void in
-            self.selections.removeAll()
-            self.selections.appendContentsOf(selections)
-            
-            self.loadAnswers(done)
-        }
-    }
+
 }
 
 class SelectionHitVC: HitVC {
@@ -35,7 +23,7 @@ class SelectionHitVC: HitVC {
     @IBOutlet weak var descriptionLabel: UITextView!
     
     
-    var vm:SelectionHitVM! = nil
+    var selectionVM:SelectionHitVM{return vm as! SelectionHitVM}
     
     @IBOutlet weak var selectionTableView: UITableView!
     @IBOutlet weak var requesterBar: UIToolbar!
@@ -66,7 +54,7 @@ class SelectionHitVC: HitVC {
         }
         answerLimitLabel.text = "Choose \(answerLimit) from below."
         
-        self.binder.bind(selectionTableView, items: self.vm.selections, refreshFunc: vm.refresh)
+        self.binder.bind(selectionTableView, items: self.vm.selections, refreshFunc: vm.loadSelections)
         self.binder.cellFunc = { indexPath in
             let selection = self.vm.selections[indexPath.row]
             let cellId =  "textSelectionCell"

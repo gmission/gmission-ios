@@ -175,7 +175,22 @@ class Hit:JsonEntity{
     var max_choices:Int{return jsonDict["max_selection_count"].intValue}
     var min_choices:Int{return jsonDict["min_selection_count"].intValue}
     
+    var att_id:Int{return jsonDict["attachment_id"].intValue}
+    func refreshAttachment(done:F){
+        if att_id == 0{
+            return
+        }
+        if self.attachment != nil{
+            done?()
+        }
+        else{
+            Attachment.getOne(att_id) { (att:Attachment) -> Void in
+                self.attachment = att
+            }
+        }
+    }
     var location:Location? = nil
+    var attachment:Attachment? = nil
     func refreshLocation(done:F){
         if self.location != nil{
             done?()

@@ -20,30 +20,22 @@ class TextHitVM:HitVM{
 }
 
 class TextHitVC: HitVC {
-//    @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var descriptionLabel: UITextView!
-    
     @IBOutlet weak var answerTextField: UITextField!
     @IBOutlet weak var answerLabel: UILabel!
-    var vm:TextHitVM! = nil
+    var textVM:TextHitVM! {return vm as! TextHitVM}
     @IBOutlet weak var requesterBar: UIToolbar!
-    @IBOutlet weak var hitStatusLabel: UILabel!
-    @IBOutlet weak var hitCreatedOn: UILabel!
     @IBOutlet weak var closeBtn: UIBarButtonItem!
     
     @IBOutlet weak var answerTableView: UITableView!
     let binder:TableBinder<Answer> = TableBinder<Answer>()
     
     override func viewDidLayoutSubviews() {
-        self.descriptionLabel.contentOffset = CGPointZero;
+//        self.descriptionLabel.contentOffset = CGPointZero;
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = vm.hit.title
-        descriptionLabel.text = vm.hit.description
-        self.hitStatusLabel.text = vm.hit.status
-        self.hitCreatedOn.text = vm.hit.created_on
         answerTableView.tableFooterView = UIView(frame: CGRect.zero)
         
         self.binder.bind(answerTableView, items: self.vm.answers, refreshFunc: vm.loadAnswers)

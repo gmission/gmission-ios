@@ -16,9 +16,6 @@ import WebImage
 
 class ImageHitVM:HitVM{
     
-    func refresh(done:F = nil){
-        self.loadAnswers(done)
-    }
 }
 
 class ImageAnswerCell:UITableViewCell{
@@ -74,25 +71,25 @@ class ImageAnswerCell:UITableViewCell{
 }
 
 class ImageHitVC: HitVC, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
-    @IBOutlet weak var textView: UITextView!
+//    @IBOutlet weak var textView: UITextView!
     
     @IBOutlet weak var imageView: UIImageView!
-    var vm:ImageHitVM! = nil
+    var imageVM:ImageHitVM {return vm as! ImageHitVM}
     @IBOutlet weak var viewForWorker: UIView!
     @IBOutlet weak var answerTableView: UITableView!
     
     @IBOutlet weak var requesterBar: UIToolbar!
-    @IBOutlet weak var hitStatusLabel: UILabel!
-    @IBOutlet weak var hitCreatedOn: UILabel!
+//    @IBOutlet weak var hitStatusLabel: UILabel!
+//    @IBOutlet weak var hitCreatedOn: UILabel!
     @IBOutlet weak var closeBtn: UIBarButtonItem!
     
     let binder:TableBinder<Answer> = TableBinder<Answer>()
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.title = vm.hit.title
-        self.textView.text = vm.hit.description
-        self.hitStatusLabel.text = vm.hit.status
-        self.hitCreatedOn.text = vm.hit.created_on
+//        self.title = vm.hit.title
+//        self.textView.text = vm.hit.description
+//        self.hitStatusLabel.text = vm.hit.status
+//        self.hitCreatedOn.text = vm.hit.created_on
         
 //        answerTableView.estimatedRowHeight = 300
 //        answerTableView.rowHeight = UITableViewAutomaticDimension
@@ -100,7 +97,7 @@ class ImageHitVC: HitVC, UINavigationControllerDelegate, UIImagePickerController
         footerView.backgroundColor = UIColor.clearColor()
         answerTableView.tableFooterView = footerView
     
-        self.binder.bind(answerTableView, items: self.vm.answers, refreshFunc: vm.refresh)
+        self.binder.bind(answerTableView, items: self.vm.answers, refreshFunc: vm.loadAnswers)
         self.binder.cellFunc = { indexPath in
             let answer = self.vm.answers[indexPath.row]
             let cell = self.answerTableView.dequeueReusableCellWithIdentifier("imageAnswerCell", forIndexPath: indexPath) as! ImageAnswerCell
@@ -170,7 +167,7 @@ class ImageHitVC: HitVC, UINavigationControllerDelegate, UIImagePickerController
     }
     
     override func viewDidLayoutSubviews() {
-        self.textView.contentOffset = CGPointZero;
+//        self.textView.contentOffset = CGPointZero;
     }
     
     var imagePicker: UIImagePickerController!
