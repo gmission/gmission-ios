@@ -5,6 +5,11 @@
 - The client is also opensource. 
 
 
+## Where to get the latest version:
+- All iOS apps need apple's approval to appear in the appstore. Apple usually takes 2 week to check a new submission, so the version in appstore is usually older than the latest code in this repo. If you want to try newest functions, please try build by yourself. 
+- **If you do not know how to build by yourself, you can also use TestFlight to get our latest beta version. Just send your email address to zchenah#ust.hk and install the "TestFlight" app from appstore. Then you will get an invitation email which includes an TestFlight redeem code. Input the code to get gMission beta version.**
+
+
 ## Features:
 - Join campaigns and submit answers. 
 - Long press on the map to request new image HIT.
@@ -18,8 +23,6 @@
 - The minimum required iOS version is 8.0.
 
 
-### Notice:
-All iOS apps need apple's approval to be in the appstore. Apple usually takes 2 week to check a new submission, so the version in appstore is older than the latest code in this repo. If you want to try new functions, please try build by yourself. 
 
 
 
