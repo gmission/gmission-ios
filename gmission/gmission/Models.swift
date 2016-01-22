@@ -186,6 +186,7 @@ class Hit:JsonEntity{
         else{
             Attachment.getOne(att_id) { (att:Attachment) -> Void in
                 self.attachment = att
+                done?()
             }
         }
     }

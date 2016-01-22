@@ -41,15 +41,10 @@ class ImageAnswerCell:UITableViewCell{
     var fullImgMask:UIView = UIView()
     
     @IBAction func fullScreenImage(sender: AnyObject) {
-        print("full")
-        
         let fullFrame:CGRect = UIScreen.mainScreen().bounds
         fullImgMask.backgroundColor = UIColor.blackColor()
         fullImgMask.frame = fullFrame
         self.window!.addSubview(fullImgMask)
-//        let imageView = UIImageView(frame: fullFrame)
-        
-//        self.window!.addSubview(self.fullImgBlurMask)
         let image = self.answerImageButton.imageView?.image
         let imgButton = UIButton(frame: fullFrame)
         imgButton.setImage(image, forState:UIControlState.Normal)
@@ -57,8 +52,6 @@ class ImageAnswerCell:UITableViewCell{
         imgButton.backgroundColor = UIColor.clearColor();
         imgButton.addTarget(self, action: "dismissHelper:", forControlEvents: UIControlEvents.TouchUpInside)
         self.window!.addSubview(imgButton)
-        
-        
     }
     
     func dismissHelper(sender:UIButton)
@@ -86,12 +79,6 @@ class ImageHitVC: HitVC, UINavigationControllerDelegate, UIImagePickerController
     let binder:TableBinder<Answer> = TableBinder<Answer>()
     override func viewDidLoad() {
         super.viewDidLoad()
-//        self.title = vm.hit.title
-//        self.textView.text = vm.hit.description
-//        self.hitStatusLabel.text = vm.hit.status
-//        self.hitCreatedOn.text = vm.hit.created_on
-        
-//        answerTableView.estimatedRowHeight = 300
 //        answerTableView.rowHeight = UITableViewAutomaticDimension
         let footerView = UIView(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
         footerView.backgroundColor = UIColor.clearColor()
@@ -103,28 +90,9 @@ class ImageHitVC: HitVC, UINavigationControllerDelegate, UIImagePickerController
             let cell = self.answerTableView.dequeueReusableCellWithIdentifier("imageAnswerCell", forIndexPath: indexPath) as! ImageAnswerCell
             
             Attachment.getOne(answer.att_id, done: { (att:Attachment) -> Void in
-                let url = NSURL(string: att.imageURL)
-                print("set url \(url)")
-                
-                    cell.answerImageButton.imageView?.contentMode = UIViewContentMode.ScaleAspectFit
-                
-                    let placeHolder = UIImage(named: "imgPlaceHolder")!
-                dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                    cell.answerImageButton.imageView?.contentMode = UIViewContentMode.ScaleAspectFit
-                    print("placeHolder\(placeHolder)")
-                    cell.answerImageButton.sd_setImageWithURL(url, forState: .Normal, placeholderImage: placeHolder)
-//                        let aspect = image.size.width / image.size.height
-//                        print("aspect \(aspect)")
-////
-////                        for c in cell.constraints{
-////                        }
-//                        cell.aspectConstraint = NSLayoutConstraint(item: cell.answerImageView, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: cell.answerImageView, attribute: NSLayoutAttribute.Height, multiplier: aspect, constant: 0.0)
-//                        cell.aspectConstraint = NSLayoutConstraint(item: cell.answerImageView, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: cell.answerImageView, attribute: NSLayoutAttribute.Width, multiplier: 1/aspect, constant: 0.0)
-//                        cell.answerImageView.image = image
-//                    })
-                })
+                cell.answerImageButton.simpleSetImage(att.imageURL)
             })
-            cell.workerNameLabel.text = "worker"
+            cell.workerNameLabel.text = ""
             cell.createdOnLabel.text = answer.created_on
             return cell
         }

@@ -73,8 +73,8 @@ extension UIButton{
     func simpleSetImage(urlStr:String){
         let placeHolder = UIImage(named: "imgPlaceHolder")!
         let url = NSURL(string: urlStr)
-        self.imageView?.contentMode = .ScaleAspectFit
         dispatch_async(dispatch_get_main_queue(), { () -> Void in  // why? cannot remember..
+            self.imageView?.contentMode = .ScaleAspectFit
             self.sd_setImageWithURL(url, forState: .Normal, placeholderImage: placeHolder)
         })
     }
@@ -88,7 +88,7 @@ class HitContentVC: EnhancedVC {
     
     func setHit(hit:Hit){
         statusLabel.text = hit.status
-        desTextView.text = hit.description
+        desTextView.text = hit.description != "" ? hit.description : "This HIT does not have more information."
         datetimeLabel.text = hit.created_on
         
         self.buttonWidth.constant = 0
@@ -97,6 +97,31 @@ class HitContentVC: EnhancedVC {
             self.imgBtn.simpleSetImage(hit.attachment!.imageURL)
         })
         
+    }
+    
+    var fullImgMask:UIView = UIView()
+    
+    @IBAction func fullScreenImage(sender: AnyObject) {
+        let fullFrame:CGRect = UIScreen.mainScreen().bounds
+        fullImgMask.backgroundColor = UIColor.blackColor()
+        fullImgMask.frame = fullFrame
+        view.window!.addSubview(fullImgMask)
+        //        let imageView = UIImageView(frame: fullFrame)
+        
+        //        self.window!.addSubview(self.fullImgBlurMask)
+        let image = imgBtn.imageView?.image
+        let imgButton = UIButton(frame: fullFrame)
+        imgButton.setImage(image, forState:UIControlState.Normal)
+        imgButton.imageView?.contentMode = UIViewContentMode.ScaleAspectFit
+        imgButton.backgroundColor = UIColor.clearColor();
+        imgButton.addTarget(self, action: "dismissHelper:", forControlEvents: UIControlEvents.TouchUpInside)
+        view.window!.addSubview(imgButton)
+    }
+    
+    func dismissHelper(sender:UIButton)
+    {
+        self.fullImgMask.removeFromSuperview()
+        sender.removeFromSuperview()
     }
     
     @IBOutlet weak var datetimeLabel: UILabel!
