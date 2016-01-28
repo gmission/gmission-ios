@@ -18,7 +18,7 @@ class MapVM{
     
     func refresh(done:F = nil){
         self.hits.removeAll()
-        let q = [ "filters" : [ ["name":"location_id","op":"neq","val":"null"] ] ]
+        let q = [ "filters" : [ ["name":"campaign_id","op":"is_null","val":"null"],  ["name":"location_id","op":"is_not_null","val":"null"] ], "limit":100,  "order_by":[ ["field":"created_on", "direction":"desc"] ] ]
         
         Hit.query(q){ (hits:[Hit])->Void in
             self.hits.appendContentsOf(hits)
@@ -90,9 +90,11 @@ class MapVC: EnhancedVC, GMSMapViewDelegate {
     
     func addHitsToMap(){
         self.mapView.clear()
-        for hit in vm.hits.array{
+        for hit in self.vm.hits.array{
             hit.refreshLocation{
-                self.addHitToMap(hit)
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    self.addHitToMap(hit)
+                })
             }
         }
     }

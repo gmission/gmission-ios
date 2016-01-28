@@ -24,7 +24,6 @@ class UserVM{
             done?()
         }
     }
-    
 }
 
 class UserVC: EnhancedVC {

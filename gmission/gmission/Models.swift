@@ -12,6 +12,8 @@ import SwiftyJSON
 
 
 
+let entityCache:NSCache = NSCache()
+
 
 class JsonEntity{
     class var urlname:String{
@@ -32,6 +34,22 @@ class JsonEntity{
             })
             done(tArray)
         }
+    }
+//    static let cacheQueue = dispatch_queue_create("com.hkustgmission.cache", nil)
+    static func cachedGetOne<T:JsonEntity>(id:Int, done:(T)->Void){
+//        dispatch_async(cacheQueue){
+            let key = "\(T.restUrl)/\(id)"
+            if let obj = entityCache.objectForKey(key){
+                print("cached \(key)")
+                done(obj as! T)
+            }else{
+                T.getOne(id, done: { (t:T) -> Void in
+                    entityCache.setObject(t, forKey: key)
+                    print("cache set \(key)")
+                    done(t)
+                })
+            }
+//        }
     }
     
     static func getOne<T:JsonEntity>(id:Int, done:(T)->Void){
@@ -109,7 +127,7 @@ class Campaign:JsonEntity{
     func refreshDetail(done:F){
         //"functions":[["name": "count", "field": "id"] ],  functions does not help as restless does not support function with filter
         let q = [ "filters" :  [["name":"campaign_id","op":"eq","val":self.id] ],
-            "limit":0]
+            "limit":0] // need a count API
         
         Hit.queryJSON(q){ (json:JSON, _:Hit?)->Void in
             self.hitCount = json["num_results"].intValue
@@ -154,7 +172,7 @@ class Location:JsonEntity{
     var z:Double {return (coord?.jsonDict["altitude"].doubleValue)!}
     
     func refreshCoordinate(done:F){
-        Coordinate.getOne(coordinate_id) { (crd:Coordinate) -> Void in
+        Coordinate.cachedGetOne(coordinate_id) { (crd:Coordinate) -> Void in
             self.coord = crd
             done?()
         }
@@ -184,7 +202,7 @@ class Hit:JsonEntity{
             done?()
         }
         else{
-            Attachment.getOne(att_id) { (att:Attachment) -> Void in
+            Attachment.cachedGetOne(att_id) { (att:Attachment) -> Void in
                 self.attachment = att
                 done?()
             }
@@ -197,7 +215,7 @@ class Hit:JsonEntity{
             done?()
         }
         else{
-            Location.getOne(location_id) { (loc:Location) -> Void in
+            Location.cachedGetOne(location_id) { (loc:Location) -> Void in
                 self.location = loc
                 loc.refreshCoordinate(done)
             }

@@ -23,6 +23,8 @@ class ImageAnswerCell:UITableViewCell{
     @IBOutlet weak var createdOnLabel: UILabel!
     @IBOutlet weak var workerNameLabel: UILabel!
     @IBOutlet weak var answerImageButton: UIButton!
+     weak var hitVC: HitVC!
+    
     internal var aspectConstraint : NSLayoutConstraint? {
         didSet {
             if oldValue != nil {
@@ -38,27 +40,12 @@ class ImageAnswerCell:UITableViewCell{
         aspectConstraint = nil
     }
     
-    var fullImgMask:UIView = UIView()
-    
     @IBAction func fullScreenImage(sender: AnyObject) {
-        let fullFrame:CGRect = UIScreen.mainScreen().bounds
-        fullImgMask.backgroundColor = UIColor.blackColor()
-        fullImgMask.frame = fullFrame
-        self.window!.addSubview(fullImgMask)
-        let image = self.answerImageButton.imageView?.image
-        let imgButton = UIButton(frame: fullFrame)
-        imgButton.setImage(image, forState:UIControlState.Normal)
-        imgButton.imageView?.contentMode = UIViewContentMode.ScaleAspectFit
-        imgButton.backgroundColor = UIColor.clearColor();
-        imgButton.addTarget(self, action: "dismissHelper:", forControlEvents: UIControlEvents.TouchUpInside)
-        self.window!.addSubview(imgButton)
+        let oldImage = (self.answerImageButton.imageView?.image)!
+        let image = UIImage(CGImage: (oldImage.CGImage)!, scale: 1.0, orientation: oldImage.imageOrientation)
+        hitVC.showFullImageView(image)
     }
     
-    func dismissHelper(sender:UIButton)
-    {
-        self.fullImgMask.removeFromSuperview()
-        sender.removeFromSuperview()
-    }
     
 
 }
@@ -94,6 +81,7 @@ class ImageHitVC: HitVC, UINavigationControllerDelegate, UIImagePickerController
             })
             cell.workerNameLabel.text = ""
             cell.createdOnLabel.text = answer.created_on
+            cell.hitVC = self
             return cell
         }
         

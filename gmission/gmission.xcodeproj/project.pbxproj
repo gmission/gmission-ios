@@ -37,6 +37,8 @@
 		9B88AEE71C44B76500441629 /* libBPush.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9B88AEE61C44B76500441629 /* libBPush.a */; };
 		9B88AEE91C44B77500441629 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9B88AEE81C44B77500441629 /* CoreTelephony.framework */; };
 		9B8CCC411C35987A006EBC04 /* HitListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B8CCC401C35987A006EBC04 /* HitListVC.swift */; };
+		9BA2F3751C5A4A1E0078E691 /* ImageViewer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BA2F3741C5A4A1E0078E691 /* ImageViewer.framework */; };
+		9BA2F3771C5A4B680078E691 /* ImageViewer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9BA2F3741C5A4A1E0078E691 /* ImageViewer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		9BB32A791C38F589007AEDB5 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 9BB32A781C38F589007AEDB5 /* icon.png */; };
 		9BD810C31C11F16E00CE09B9 /* CampaignListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BD810C21C11F16E00CE09B9 /* CampaignListVC.swift */; };
 		9BD810C51C13125F00CE09B9 /* ----MessageVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BD810C41C13125F00CE09B9 /* ----MessageVC.swift */; };
@@ -91,6 +93,7 @@
 			files = (
 				9B88AEA31C3BF1F300441629 /* WebImage.framework in Embed Frameworks */,
 				9BE4F6091C1190B300371A3A /* SwiftyJSON.framework in Embed Frameworks */,
+				9BA2F3771C5A4B680078E691 /* ImageViewer.framework in Embed Frameworks */,
 				9BE4F6071C1190B300371A3A /* Alamofire.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -130,6 +133,7 @@
 		9B88AEE61C44B76500441629 /* libBPush.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libBPush.a; path = Frameworks/libBPush.a; sourceTree = "<group>"; };
 		9B88AEE81C44B77500441629 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		9B8CCC401C35987A006EBC04 /* HitListVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HitListVC.swift; sourceTree = "<group>"; };
+		9BA2F3741C5A4A1E0078E691 /* ImageViewer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageViewer.framework; path = Carthage/Build/iOS/ImageViewer.framework; sourceTree = "<group>"; };
 		9BB32A781C38F589007AEDB5 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon.png; path = resources/icon.png; sourceTree = SOURCE_ROOT; };
 		9BD810C21C11F16E00CE09B9 /* CampaignListVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CampaignListVC.swift; sourceTree = "<group>"; };
 		9BD810C41C13125F00CE09B9 /* ----MessageVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "----MessageVC.swift"; sourceTree = "<group>"; };
@@ -186,6 +190,7 @@
 				9BD810DD1C13163800CE09B9 /* CoreBluetooth.framework in Frameworks */,
 				9BD810DE1C13163800CE09B9 /* CoreData.framework in Frameworks */,
 				9BD810DF1C13163800CE09B9 /* CoreGraphics.framework in Frameworks */,
+				9BA2F3751C5A4A1E0078E691 /* ImageViewer.framework in Frameworks */,
 				9BD810E01C13163800CE09B9 /* CoreLocation.framework in Frameworks */,
 				9BD810E11C13163800CE09B9 /* CoreText.framework in Frameworks */,
 				9BD810E21C13163800CE09B9 /* GLKit.framework in Frameworks */,
@@ -243,6 +248,7 @@
 				9B88AEE61C44B76500441629 /* libBPush.a */,
 				9B23D8201C3BEF73002241B2 /* WebImage.framework */,
 				9B5C51561C365F9300AE5381 /* MBProgressHUD.h */,
+				9BA2F3741C5A4A1E0078E691 /* ImageViewer.framework */,
 				9B5C51571C365F9300AE5381 /* MBProgressHUD.m */,
 				9B3F80561C2ADB5100371C16 /* GoogleMaps.bundle */,
 				9B3F80571C2ADB5100371C16 /* GoogleMaps.framework */,

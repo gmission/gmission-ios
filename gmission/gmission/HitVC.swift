@@ -99,29 +99,11 @@ class HitContentVC: EnhancedVC {
         
     }
     
-    var fullImgMask:UIView = UIView()
     
     @IBAction func fullScreenImage(sender: AnyObject) {
-        let fullFrame:CGRect = UIScreen.mainScreen().bounds
-        fullImgMask.backgroundColor = UIColor.blackColor()
-        fullImgMask.frame = fullFrame
-        view.window!.addSubview(fullImgMask)
-        //        let imageView = UIImageView(frame: fullFrame)
-        
-        //        self.window!.addSubview(self.fullImgBlurMask)
-        let image = imgBtn.imageView?.image
-        let imgButton = UIButton(frame: fullFrame)
-        imgButton.setImage(image, forState:UIControlState.Normal)
-        imgButton.imageView?.contentMode = UIViewContentMode.ScaleAspectFit
-        imgButton.backgroundColor = UIColor.clearColor();
-        imgButton.addTarget(self, action: "dismissHelper:", forControlEvents: UIControlEvents.TouchUpInside)
-        view.window!.addSubview(imgButton)
-    }
-    
-    func dismissHelper(sender:UIButton)
-    {
-        self.fullImgMask.removeFromSuperview()
-        sender.removeFromSuperview()
+        let oldImage = imgBtn.imageView?.image!
+        let image = UIImage(CGImage: (oldImage?.CGImage)!, scale: 1.0, orientation: (oldImage?.imageOrientation)!)
+        self.showFullImageView(image)
     }
     
     @IBOutlet weak var datetimeLabel: UILabel!
