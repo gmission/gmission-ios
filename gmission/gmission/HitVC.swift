@@ -89,7 +89,7 @@ class HitContentVC: EnhancedVC {
     func setHit(hit:Hit){
         statusLabel.text = hit.status
         desTextView.text = hit.description != "" ? hit.description : "This HIT does not have more information."
-        datetimeLabel.text = hit.created_on
+        datetimeLabel.text = NSDateToLocalTimeString(HKTimeStringToNSDate(hit.created_on))
         
         self.buttonWidth.constant = 0
         hit.refreshAttachment({ () -> Void in

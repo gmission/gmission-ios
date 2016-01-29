@@ -15,6 +15,23 @@ import SwiftyJSON
 let entityCache:NSCache = NSCache()
 
 
+func HKTimeStringToNSDate(dtStr:String)->NSDate{
+    let formatter = NSDateFormatter();
+    formatter.dateFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'"
+    formatter.timeZone = NSTimeZone(name: "Asia/Hong_Kong");
+    let dt = formatter.dateFromString(dtStr);
+    return dt!
+}
+
+func NSDateToLocalTimeString(dt:NSDate)->String{
+    let formatter = NSDateFormatter();
+    formatter.dateFormat = "yyyy'-'MM'-'dd' 'HH':'mm':'ss'"
+    formatter.timeZone = NSTimeZone.localTimeZone()
+    let dtStr = formatter.stringFromDate(dt)
+    return dtStr
+    
+}
+
 class JsonEntity{
     class var urlname:String{
         return "name"

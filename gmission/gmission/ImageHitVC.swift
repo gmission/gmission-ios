@@ -80,7 +80,7 @@ class ImageHitVC: HitVC, UINavigationControllerDelegate, UIImagePickerController
                 cell.answerImageButton.simpleSetImage(att.imageURL)
             })
             cell.workerNameLabel.text = ""
-            cell.createdOnLabel.text = answer.created_on
+            cell.createdOnLabel.text = NSDateToLocalTimeString(HKTimeStringToNSDate(answer.created_on))
             cell.hitVC = self
             return cell
         }
