@@ -38,7 +38,9 @@ class CampaignListVM{
 //        fillFakeContent()
 //        done?()
 //        return;
-        Campaign.getAll{ (campaigns:[Campaign])->Void in
+        let q = [ "order_by":[ ["field":"created_on", "direction":"desc"] ] ]
+        
+        Campaign.query(q){ (campaigns:[Campaign])->Void in
             self.campaigns.removeAll()
             self.campaigns.appendContentsOf(campaigns)
             done?()

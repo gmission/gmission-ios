@@ -1,3 +1,4 @@
-github "Alamofire/Alamofire" "3.1.4"
-github "rs/SDWebImage" "3.7.3"
+github "Alamofire/Alamofire" "3.1.5"
+github "MailOnline/ImageViewer" "1.2"
+github "rs/SDWebImage" "3.7.5"
 github "SwiftyJSON/SwiftyJSON" "2.3.3"

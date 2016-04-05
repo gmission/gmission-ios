@@ -11,51 +11,30 @@ import UIKit
 import SwiftyJSON
 
 
-
-
 class SelectionHitVM:HitVM{
-    let selections = ArrayForTableView<Selection>()
-    
-    var selected = [Int]()
-    
-    func refresh(done:F = nil){
-        let q = ["filters":[ ["name":"hit_id","op":"eq","val":self.hit.id] ] ]
-        Selection.query(q){ (selections:[Selection])->Void in
-            self.selections.removeAll()
-            self.selections.appendContentsOf(selections)
-            
-            self.loadAnswers(done)
-        }
-    }
+
 }
 
 class SelectionHitVC: HitVC {
 //    @IBOutlet weak var tableView: UITableView!
 //    @IBOutlet weak var titleLabel: UILabel!
-    @IBOutlet weak var descriptionLabel: UITextView!
     
     
-    var vm:SelectionHitVM! = nil
+    var selectionVM:SelectionHitVM{return vm as! SelectionHitVM}
     
     @IBOutlet weak var selectionTableView: UITableView!
     @IBOutlet weak var requesterBar: UIToolbar!
     
     @IBOutlet weak var answerLimitLabel: UILabel!
-    @IBOutlet weak var hitStatusLabel: UILabel!
-    @IBOutlet weak var hitCreatedOn: UILabel!
     @IBOutlet weak var closeBtn: UIBarButtonItem!
     let binder:TableBinder<Selection> = TableBinder<Selection>()
     
     override func viewDidLayoutSubviews() {
-        self.descriptionLabel.contentOffset = CGPointZero;
+//        self.descriptionLabel.contentOffset = CGPointZero;
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-//        titleLabel.text = vm.hit.title
-        descriptionLabel.text = vm.hit.description
-        self.hitStatusLabel.text = vm.hit.status
-        self.hitCreatedOn.text = vm.hit.created_on
         selectionTableView.tableFooterView = UIView(frame: CGRect.zero)
         
         var answerLimit:String
@@ -66,7 +45,7 @@ class SelectionHitVC: HitVC {
         }
         answerLimitLabel.text = "Choose \(answerLimit) from below."
         
-        self.binder.bind(selectionTableView, items: self.vm.selections, refreshFunc: vm.refresh)
+        self.binder.bind(selectionTableView, items: self.vm.selections, refreshFunc: vm.loadSelections)
         self.binder.cellFunc = { indexPath in
             let selection = self.vm.selections[indexPath.row]
             let cellId =  "textSelectionCell"

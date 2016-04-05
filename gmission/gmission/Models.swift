@@ -12,6 +12,25 @@ import SwiftyJSON
 
 
 
+let entityCache:NSCache = NSCache()
+
+
+func HKTimeStringToNSDate(dtStr:String)->NSDate{
+    let formatter = NSDateFormatter();
+    formatter.dateFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'"
+    formatter.timeZone = NSTimeZone(name: "Asia/Hong_Kong");
+    let dt = formatter.dateFromString(dtStr);
+    return dt!
+}
+
+func NSDateToLocalTimeString(dt:NSDate)->String{
+    let formatter = NSDateFormatter();
+    formatter.dateFormat = "yyyy'-'MM'-'dd' 'HH':'mm':'ss'"
+    formatter.timeZone = NSTimeZone.localTimeZone()
+    let dtStr = formatter.stringFromDate(dt)
+    return dtStr
+    
+}
 
 class JsonEntity{
     class var urlname:String{
@@ -32,6 +51,22 @@ class JsonEntity{
             })
             done(tArray)
         }
+    }
+//    static let cacheQueue = dispatch_queue_create("com.hkustgmission.cache", nil)
+    static func cachedGetOne<T:JsonEntity>(id:Int, done:(T)->Void){
+//        dispatch_async(cacheQueue){
+            let key = "\(T.restUrl)/\(id)"
+            if let obj = entityCache.objectForKey(key){
+                print("cached \(key)")
+                done(obj as! T)
+            }else{
+                T.getOne(id, done: { (t:T) -> Void in
+                    entityCache.setObject(t, forKey: key)
+                    print("cache set \(key)")
+                    done(t)
+                })
+            }
+//        }
     }
     
     static func getOne<T:JsonEntity>(id:Int, done:(T)->Void){
@@ -109,7 +144,7 @@ class Campaign:JsonEntity{
     func refreshDetail(done:F){
         //"functions":[["name": "count", "field": "id"] ],  functions does not help as restless does not support function with filter
         let q = [ "filters" :  [["name":"campaign_id","op":"eq","val":self.id] ],
-            "limit":0]
+            "limit":0] // need a count API
         
         Hit.queryJSON(q){ (json:JSON, _:Hit?)->Void in
             self.hitCount = json["num_results"].intValue
@@ -154,7 +189,7 @@ class Location:JsonEntity{
     var z:Double {return (coord?.jsonDict["altitude"].doubleValue)!}
     
     func refreshCoordinate(done:F){
-        Coordinate.getOne(coordinate_id) { (crd:Coordinate) -> Void in
+        Coordinate.cachedGetOne(coordinate_id) { (crd:Coordinate) -> Void in
             self.coord = crd
             done?()
         }
@@ -175,13 +210,29 @@ class Hit:JsonEntity{
     var max_choices:Int{return jsonDict["max_selection_count"].intValue}
     var min_choices:Int{return jsonDict["min_selection_count"].intValue}
     
+    var att_id:Int{return jsonDict["attachment_id"].intValue}
+    func refreshAttachment(done:F){
+        if att_id == 0{
+            return
+        }
+        if self.attachment != nil{
+            done?()
+        }
+        else{
+            Attachment.cachedGetOne(att_id) { (att:Attachment) -> Void in
+                self.attachment = att
+                done?()
+            }
+        }
+    }
     var location:Location? = nil
+    var attachment:Attachment? = nil
     func refreshLocation(done:F){
         if self.location != nil{
             done?()
         }
         else{
-            Location.getOne(location_id) { (loc:Location) -> Void in
+            Location.cachedGetOne(location_id) { (loc:Location) -> Void in
                 self.location = loc
                 loc.refreshCoordinate(done)
             }

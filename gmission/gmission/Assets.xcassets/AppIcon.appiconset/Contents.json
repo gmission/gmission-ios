@@ -3,73 +3,78 @@
     {
       "size" : "29x29",
       "idiom" : "iphone",
-      "filename" : "gMission_icon2-29@2x.png",
+      "filename" : "gmission_hd_full-29@2x.png",
       "scale" : "2x"
     },
     {
       "size" : "29x29",
       "idiom" : "iphone",
-      "filename" : "gMission_icon2-29@3x.png",
+      "filename" : "gmission_hd_full-29@3x.png",
       "scale" : "3x"
     },
     {
       "size" : "40x40",
       "idiom" : "iphone",
-      "filename" : "gMission_icon2-40@2x.png",
+      "filename" : "gmission_hd_full-40@2x.png",
       "scale" : "2x"
     },
     {
       "size" : "40x40",
       "idiom" : "iphone",
-      "filename" : "gMission_icon2-40@3x.png",
+      "filename" : "gmission_hd_full-40@3x.png",
       "scale" : "3x"
     },
     {
       "size" : "60x60",
       "idiom" : "iphone",
-      "filename" : "gMission_icon2-60@2x.png",
+      "filename" : "gmission_hd_full-60@2x.png",
       "scale" : "2x"
     },
     {
       "size" : "60x60",
       "idiom" : "iphone",
-      "filename" : "gMission_icon2-60@3x.png",
+      "filename" : "gmission_hd_full-60@3x.png",
       "scale" : "3x"
     },
     {
       "size" : "29x29",
       "idiom" : "ipad",
-      "filename" : "gMission_icon2-29.png",
+      "filename" : "gmission_hd_full-29.png",
       "scale" : "1x"
     },
     {
       "size" : "29x29",
       "idiom" : "ipad",
-      "filename" : "gMission_icon2-29@2x.png",
+      "filename" : "gmission_hd_full-29@2x.png",
       "scale" : "2x"
     },
     {
       "size" : "40x40",
       "idiom" : "ipad",
-      "filename" : "gMission_icon2-40.png",
+      "filename" : "gmission_hd_full-40.png",
       "scale" : "1x"
     },
     {
       "size" : "40x40",
       "idiom" : "ipad",
-      "filename" : "gMission_icon2-40@2x.png",
+      "filename" : "gmission_hd_full-40@2x.png",
       "scale" : "2x"
     },
     {
       "size" : "76x76",
       "idiom" : "ipad",
-      "filename" : "gMission_icon2-76.png",
+      "filename" : "gmission_hd_full-76.png",
       "scale" : "1x"
     },
     {
       "size" : "76x76",
       "idiom" : "ipad",
-      "filename" : "gMission_icon2-76@2x.png",
+      "filename" : "gmission_hd_full-76@2x.png",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "ipad",
+      "size" : "83.5x83.5",
       "scale" : "2x"
     }
   ],

@@ -48,6 +48,20 @@ class HitVM{
             done?()
         }
     }
+    
+    let selections = ArrayForTableView<Selection>()
+    
+    var selected = [Int]()
+    
+    func loadSelections(done:F = nil){
+        let q = ["filters":[ ["name":"hit_id","op":"eq","val":self.hit.id] ] ]
+        Selection.query(q){ (selections:[Selection])->Void in
+            self.selections.removeAll()
+            self.selections.appendContentsOf(selections)
+            
+            self.loadAnswers(done)
+        }
+    }
 //    func refresh(done:F = nil){
 //        Hit.query{ (hits:[Hit])->Void in
 //            self.hits.appendContentsOf(hits)
@@ -55,12 +69,60 @@ class HitVM{
 //    }
 }
 
+extension UIButton{
+    func simpleSetImage(urlStr:String){
+        let placeHolder = UIImage(named: "imgPlaceHolder")!
+        let url = NSURL(string: urlStr)
+        dispatch_async(dispatch_get_main_queue(), { () -> Void in  // why? cannot remember..
+            self.imageView?.contentMode = .ScaleAspectFit
+            self.sd_setImageWithURL(url, forState: .Normal, placeholderImage: placeHolder)
+        })
+    }
+}
+
+
+class HitContentVC: EnhancedVC {
+    override func viewDidLoad() {
+        super.viewDidLoad()
+    }
+    
+    func setHit(hit:Hit){
+        statusLabel.text = hit.status
+        desTextView.text = hit.description != "" ? hit.description : "This HIT does not have more information."
+        datetimeLabel.text = NSDateToLocalTimeString(HKTimeStringToNSDate(hit.created_on))
+        
+        self.buttonWidth.constant = 0
+        hit.refreshAttachment({ () -> Void in
+            self.buttonWidth.constant = 80
+            self.imgBtn.simpleSetImage(hit.attachment!.imageURL)
+        })
+        
+    }
+    
+    
+    @IBAction func fullScreenImage(sender: AnyObject) {
+        let oldImage = imgBtn.imageView?.image!
+        let image = UIImage(CGImage: (oldImage?.CGImage)!, scale: 1.0, orientation: (oldImage?.imageOrientation)!)
+        self.showFullImageView(image)
+    }
+    
+    @IBOutlet weak var datetimeLabel: UILabel!
+    @IBOutlet weak var statusLabel: UILabel!
+    @IBOutlet weak var desTextView: UITextView!
+    @IBOutlet weak var buttonWidth: NSLayoutConstraint!
+    @IBOutlet weak var imgBtn: UIButton!
+}
+
 class HitVC: EnhancedVC {
+    var vm:HitVM! = nil
+    var contentVC:HitContentVC{return self.childViewControllers.last as! HitContentVC}
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.title = vm.hit.title
+        contentVC.setHit(vm.hit)
+        
         self.navigationItem.setRightBarButtonItem(UIBarButtonItem(title: "Submit", style: UIBarButtonItemStyle.Plain, target: self, action: "submitAnswer"), animated: true)
-//        self.navigationItem.leftBarButtonItem?.width = 80
     }
     
     func switchToRequester(){

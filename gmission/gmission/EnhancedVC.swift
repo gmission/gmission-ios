@@ -7,6 +7,14 @@
 //
 
 import UIKit
+import ImageViewer
+
+    class NaiveProvider:ImageProvider{
+        var image:UIImage!
+        func provideImage(completion: UIImage? -> Void) {
+            completion(image)
+        }
+    }
 
 class EnhancedVC: UIViewController {
 
@@ -71,6 +79,20 @@ class EnhancedVC: UIViewController {
             print("popped out loginVC")
         })
     }
+    
+    
+    func showFullImageView(image:UIImage){
+        let imageProvider = NaiveProvider()
+        imageProvider.image = image
+        
+        let buttonConfiguration = ButtonStateAssets(normalAsset:UIImage(named: "close_normal")!, highlightedAsset:UIImage(named: "close_highlighted")!)
+        let configuration = ImageViewerConfiguration(imageSize: image.size, closeButtonAssets: buttonConfiguration)
+        
+        let imageViewer = ImageViewer(imageProvider: imageProvider, configuration: configuration, displacedView: self.view)
+        
+        self.presentImageViewer(imageViewer)
+    }
+    
     
     class func topViewController(base: UIViewController? = UIApplication.sharedApplication().keyWindow?.rootViewController) -> UIViewController? {
         if let nav = base as? UINavigationController {

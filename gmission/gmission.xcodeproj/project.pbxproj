@@ -37,6 +37,8 @@
 		9B88AEE71C44B76500441629 /* libBPush.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9B88AEE61C44B76500441629 /* libBPush.a */; };
 		9B88AEE91C44B77500441629 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9B88AEE81C44B77500441629 /* CoreTelephony.framework */; };
 		9B8CCC411C35987A006EBC04 /* HitListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B8CCC401C35987A006EBC04 /* HitListVC.swift */; };
+		9BA2F3751C5A4A1E0078E691 /* ImageViewer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BA2F3741C5A4A1E0078E691 /* ImageViewer.framework */; };
+		9BA2F3771C5A4B680078E691 /* ImageViewer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9BA2F3741C5A4A1E0078E691 /* ImageViewer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		9BB32A791C38F589007AEDB5 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 9BB32A781C38F589007AEDB5 /* icon.png */; };
 		9BD810C31C11F16E00CE09B9 /* CampaignListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BD810C21C11F16E00CE09B9 /* CampaignListVC.swift */; };
 		9BD810C51C13125F00CE09B9 /* ----MessageVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BD810C41C13125F00CE09B9 /* ----MessageVC.swift */; };
@@ -77,6 +79,8 @@
 		9BE4F6081C1190B300371A3A /* SwiftyJSON.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BE4F6031C1185C100371A3A /* SwiftyJSON.framework */; };
 		9BE4F6091C1190B300371A3A /* SwiftyJSON.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9BE4F6031C1185C100371A3A /* SwiftyJSON.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		9BF151E11C4F9E56004E4620 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BF151E01C4F9E56004E4620 /* Models.swift */; };
+		9BF151E41C50B16D004E4620 /* landscape_test.png in Resources */ = {isa = PBXBuildFile; fileRef = 9BF151E21C50B16D004E4620 /* landscape_test.png */; };
+		9BF151E51C50B16D004E4620 /* portrait_test.png in Resources */ = {isa = PBXBuildFile; fileRef = 9BF151E31C50B16D004E4620 /* portrait_test.png */; };
 		9BF92D3E1C38D9EC003597E3 /* AskVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BF92D3D1C38D9EC003597E3 /* AskVC.swift */; };
 /* End PBXBuildFile section */
 
@@ -89,6 +93,7 @@
 			files = (
 				9B88AEA31C3BF1F300441629 /* WebImage.framework in Embed Frameworks */,
 				9BE4F6091C1190B300371A3A /* SwiftyJSON.framework in Embed Frameworks */,
+				9BA2F3771C5A4B680078E691 /* ImageViewer.framework in Embed Frameworks */,
 				9BE4F6071C1190B300371A3A /* Alamofire.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -128,6 +133,7 @@
 		9B88AEE61C44B76500441629 /* libBPush.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libBPush.a; path = Frameworks/libBPush.a; sourceTree = "<group>"; };
 		9B88AEE81C44B77500441629 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		9B8CCC401C35987A006EBC04 /* HitListVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HitListVC.swift; sourceTree = "<group>"; };
+		9BA2F3741C5A4A1E0078E691 /* ImageViewer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageViewer.framework; path = Carthage/Build/iOS/ImageViewer.framework; sourceTree = "<group>"; };
 		9BB32A781C38F589007AEDB5 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon.png; path = resources/icon.png; sourceTree = SOURCE_ROOT; };
 		9BD810C21C11F16E00CE09B9 /* CampaignListVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CampaignListVC.swift; sourceTree = "<group>"; };
 		9BD810C41C13125F00CE09B9 /* ----MessageVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "----MessageVC.swift"; sourceTree = "<group>"; };
@@ -168,6 +174,8 @@
 		9BE4F6021C1185C100371A3A /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Carthage/Build/iOS/Alamofire.framework; sourceTree = SOURCE_ROOT; };
 		9BE4F6031C1185C100371A3A /* SwiftyJSON.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftyJSON.framework; path = Carthage/Build/iOS/SwiftyJSON.framework; sourceTree = SOURCE_ROOT; };
 		9BF151E01C4F9E56004E4620 /* Models.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		9BF151E21C50B16D004E4620 /* landscape_test.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = landscape_test.png; path = ../../../../Desktop/landscape_test.png; sourceTree = "<group>"; };
+		9BF151E31C50B16D004E4620 /* portrait_test.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = portrait_test.png; path = ../../../../Desktop/portrait_test.png; sourceTree = "<group>"; };
 		9BF92D3D1C38D9EC003597E3 /* AskVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AskVC.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -182,6 +190,7 @@
 				9BD810DD1C13163800CE09B9 /* CoreBluetooth.framework in Frameworks */,
 				9BD810DE1C13163800CE09B9 /* CoreData.framework in Frameworks */,
 				9BD810DF1C13163800CE09B9 /* CoreGraphics.framework in Frameworks */,
+				9BA2F3751C5A4A1E0078E691 /* ImageViewer.framework in Frameworks */,
 				9BD810E01C13163800CE09B9 /* CoreLocation.framework in Frameworks */,
 				9BD810E11C13163800CE09B9 /* CoreText.framework in Frameworks */,
 				9BD810E21C13163800CE09B9 /* GLKit.framework in Frameworks */,
@@ -208,6 +217,8 @@
 		9B62DDD21C32D3C700AD7F88 /* images */ = {
 			isa = PBXGroup;
 			children = (
+				9BF151E21C50B16D004E4620 /* landscape_test.png */,
+				9BF151E31C50B16D004E4620 /* portrait_test.png */,
 				9B88AEA61C3D04B200441629 /* PoI-100.png */,
 				9B88AEAD1C3F60E300441629 /* PoI-blue-100.png */,
 				9B88AEAF1C3F9BD900441629 /* PoI-green-100.png */,
@@ -237,6 +248,7 @@
 				9B88AEE61C44B76500441629 /* libBPush.a */,
 				9B23D8201C3BEF73002241B2 /* WebImage.framework */,
 				9B5C51561C365F9300AE5381 /* MBProgressHUD.h */,
+				9BA2F3741C5A4A1E0078E691 /* ImageViewer.framework */,
 				9B5C51571C365F9300AE5381 /* MBProgressHUD.m */,
 				9B3F80561C2ADB5100371C16 /* GoogleMaps.bundle */,
 				9B3F80571C2ADB5100371C16 /* GoogleMaps.framework */,
@@ -408,9 +420,11 @@
 				9B88AEB01C3F9BD900441629 /* PoI-green-100.png in Resources */,
 				9B5C51611C36C5E000AE5381 /* Message-75.png in Resources */,
 				9B5C515C1C366D9500AE5381 /* question_blue.png in Resources */,
+				9BF151E41C50B16D004E4620 /* landscape_test.png in Resources */,
 				9B3F80581C2ADB5100371C16 /* GoogleMaps.bundle in Resources */,
 				9BB32A791C38F589007AEDB5 /* icon.png in Resources */,
 				9B62DDC91C32D3BE00AD7F88 /* Camera-100.png in Resources */,
+				9BF151E51C50B16D004E4620 /* portrait_test.png in Resources */,
 				9B62DDCA1C32D3BE00AD7F88 /* Checklist Filled-100.png in Resources */,
 				9B62DDCF1C32D3BE00AD7F88 /* Multiple Choice-100.png in Resources */,
 				9B5C515E1C3670CE00AE5381 /* Map Marker-75.png in Resources */,
