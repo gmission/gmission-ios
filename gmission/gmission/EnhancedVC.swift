@@ -14,6 +14,10 @@ import ImageViewer
         func provideImage(completion: UIImage? -> Void) {
             completion(image)
         }
+        
+        func provideImage(atIndex index: Int, completion: UIImage? -> Void){
+            
+        }
     }
 
 class EnhancedVC: UIViewController {
@@ -85,7 +89,7 @@ class EnhancedVC: UIViewController {
         let imageProvider = NaiveProvider()
         imageProvider.image = image
         
-        let buttonConfiguration = ButtonStateAssets(normalAsset:UIImage(named: "close_normal")!, highlightedAsset:UIImage(named: "close_highlighted")!)
+        let buttonConfiguration = CloseButtonAssets(normal:UIImage(named: "close_normal")!, highlighted:UIImage(named: "close_highlighted")!)
         let configuration = ImageViewerConfiguration(imageSize: image.size, closeButtonAssets: buttonConfiguration)
         
         let imageViewer = ImageViewer(imageProvider: imageProvider, configuration: configuration, displacedView: self.view)
