@@ -11,90 +11,59 @@ import AVFoundation
 
 /*
 
+Features:
+
+- double tap to toggle betweeen Aspect Fit & Aspect Fill zoom factor
+- manual pinch to zoom up to approx. 4x the size of full-sized image
+- rotation support
+- swipe to dismiss
+- initiation and completion blocks to support a case where the original image node should be hidden or unhidden alongside show and dismiss animations
+
 Usage:
 
-- Initialize the VC, set optional initiation and completion blocks, and present by calling "presentImageViewer".
+- Initialize ImageViewer, set optional initiation and completion blocks, and present by calling "presentImageViewer".
 
 How it works:
 
-- Attaches itself as a child viewcontroller to the root viewcontroller of the key window.
-- displays itself in fullscreen (nothing is visible at that point, but it's there, trust me...)
-- makes a screenshot of the parent node (can be any UIView subclass really, but a UIImageView is the most logical choice)
-- puts this screenshot into an imageview matching the position and size of the parent node.
-- sets the target size and position for the imageview to aspect fit size and centered while kicking in the black overlay.
-- animates this imageview into the scrollview (that will serve as zooming canvas) reaching final position and size.
-- tries to get a full-sized version of the image, if successful, replaces the screenshot with that image.
-- dismiss either with close button, or "swipe up/down" gesture.
-- if closed, image is animated back to it's original position in whatever controller that invoked this image viewer controller.
-
-Features:
-
-- double tap to toggle between aspect fit & aspect fill zoom factor.
-- manual pinch to zoom up to 4x the size of full-sized image
-- rotation support
-- swipe to dismiss
-- initiation and completion blocks to support a case where the original image node should be hidden or unhidden alongside show and dismiss animations.
+- Gets presented modally via convenience UIViewControler extension, using custom modal presentation that is enforced internally.
+- Displays itself in full screen (nothing is visible at that point, but it's there, trust me...)
+- Makes a screenshot of the displaced view that can be any UIView (or subclass) really, but UIImageView is the most probable choice.
+- Puts this screenshot into a new UIImageView and matches its position and size to the displaced view.
+- Sets the target size and position for the UIImageView to aspectFit size and centered while kicking in the black overlay.
+- Animates the image view into the scroll view (that serves as zooming canvas) and reaches final position and size.
+- Immediately tries to get a full-sized version of the image from imageProvider.
+- If successful, replaces the screenshot in the image view with probably a higher-res image.
+- Gets dismissed either via Close button, or via "swipe up/down" gesture.
+- While being "closed", image is animated back to it's "original" position which is a rect that matches to the displaced view's position
+which overall gives us the illusion of the UI element returning to its original place.
 
 */
 
-public extension UIViewController {
-    
-    public func presentImageViewer(imageViewer: ImageViewer, completion: (Void -> Void)? = {}) {
-        self.presentViewController(imageViewer, animated: true, completion: completion)
-    }
-}
-
-public protocol ImageProvider {
-    
-    func provideImage(completion: UIImage? -> Void)
-}
-
-public struct ButtonStateAssets {
-    
-    public let normalAsset: UIImage
-    public let highlightedAsset: UIImage?
-    
-    public init(normalAsset: UIImage, highlightedAsset: UIImage?) {
-        
-        self.normalAsset = normalAsset
-        self.highlightedAsset = highlightedAsset
-    }
-}
-
-public struct ImageViewerConfiguration {
-    
-    public let imageSize: CGSize
-    public let closeButtonAssets: ButtonStateAssets
-    
-    public init(imageSize: CGSize, closeButtonAssets: ButtonStateAssets) {
-        
-        self.imageSize = imageSize
-        self.closeButtonAssets = closeButtonAssets
-    }
-}
-
 public final class ImageViewer: UIViewController, UIScrollViewDelegate, UIViewControllerTransitioningDelegate {
     
-    @IBOutlet private var scrollView: UIScrollView!
-    @IBOutlet private var overlayView: UIView!
-    @IBOutlet private var closeButton: UIButton!
-    
+    /// UI
+    private var scrollView: UIScrollView!
+    private var overlayView: UIView!
+    private var closeButton: UIButton!
     private var imageView = UIImageView()
     
+    private let displacedView: UIView
     private var applicationWindow: UIWindow? {
-        if let window = UIApplication.sharedApplication().delegate?.window { return window }
-        return nil
+        return UIApplication.sharedApplication().delegate?.window?.flatMap { $0 }
     }
     
+    /// LOCAL STATE
     private var parentViewFrameInOurCoordinateSystem = CGRectZero
     private var isAnimating = false
     private var shouldRotate = false
     private var isSwipingToDismiss = false
     private var dynamicTransparencyActive = false
+    private let imageProvider: ImageProvider
+    
+    /// LOCAL CONFIG
+    private let configuration: ImageViewerConfiguration
     private var initialCloseButtonOrigin = CGPointZero
     private var closeButtonSize = CGSize(width: 50, height: 50)
-    private var isPortraitOnly = false
-
     private let closeButtonPadding         = 8.0
     private let showDuration               = 0.25
     private let dismissDuration            = 0.25
@@ -102,27 +71,34 @@ public final class ImageViewer: UIViewController, UIScrollViewDelegate, UIViewCo
     private let hideCloseButtonDuration    = 0.05
     private let zoomDuration               = 0.2
     private let thresholdVelocity: CGFloat = 1000 // It works as a threshold.
-    
-    private let imageProvider: ImageProvider
-    private let configuration: ImageViewerConfiguration
-    private let displacedView: UIView
-    
+
+    /// TRANSITIONS
     private let presentTransition: ImageViewerPresentTransition
     private let dismissTransition: ImageViewerDismissTransition
     private let swipeToDismissTransition: ImageViewerSwipeToDismissTransition
     
-    public var showInitiationBlock: (Void -> Void)? //executed right before the image animation into its final position starts.
-    public var showCompletionBlock: (Void -> Void)? //executed as the last step after all the show animations.
-    public var closeButtonActionInitiationBlock: (Void -> Void)? //executed as the first step before the button's close action starts.
-    public var closeButtonActionCompletionBlock: (Void -> Void)? //executed as the last step for close button's close action.
-    public var swipeToDismissInitiationBlock: (Void -> Void)? //executed as the first step for swipe to dismiss action.
-    public var swipeToDismissCompletionBlock: (Void -> Void)? //executed as the last step for swipe to dismiss action.
-    public var dismissCompletionBlock: (Void -> Void)? //executed as the last step when the ImageViewer is dismissed (either via the close button, or swipe)
+    /// LIFE CYCLE BLOCKS
     
+    /// Executed right before the image animation into its final position starts.
+    public var showInitiationBlock: (Void -> Void)?
+    /// Executed as the last step after all the show animations.
+    public var showCompletionBlock: (Void -> Void)?
+    /// Executed as the first step before the button's close action starts.
+    public var closeButtonActionInitiationBlock: (Void -> Void)?
+    /// Executed as the last step for close button's close action.
+    public var closeButtonActionCompletionBlock: (Void -> Void)?
+    /// Executed as the first step for swipe to dismiss action.
+    public var swipeToDismissInitiationBlock: (Void -> Void)?
+    /// Executed as the last step for swipe to dismiss action.
+    public var swipeToDismissCompletionBlock: (Void -> Void)?
+    /// Executed as the last step when the ImageViewer is dismissed (either via the close button, or swipe)
+    public var dismissCompletionBlock: (Void -> Void)?
+    
+    /// INTERACTIONS
     private let doubleTapRecognizer = UITapGestureRecognizer()
     private let panGestureRecognizer = UIPanGestureRecognizer()
     
-    // MARK: - Dealloc
+    // MARK: - Deinit
     
     deinit {
         scrollView.removeObserver(self, forKeyPath: "contentOffset")
@@ -136,9 +112,10 @@ public final class ImageViewer: UIViewController, UIScrollViewDelegate, UIViewCo
         self.configuration = configuration
         self.displacedView = displacedView
         
-        self.presentTransition = ImageViewerPresentTransition(duration: self.showDuration)
-        self.dismissTransition = ImageViewerDismissTransition(duration: self.dismissDuration)
+        self.presentTransition = ImageViewerPresentTransition(duration: showDuration)
+        self.dismissTransition = ImageViewerDismissTransition(duration: dismissDuration)
         self.swipeToDismissTransition = ImageViewerSwipeToDismissTransition()
+        
         super.init(nibName: nil, bundle: nil)
 
         transitioningDelegate = self
@@ -156,18 +133,19 @@ public final class ImageViewer: UIViewController, UIScrollViewDelegate, UIViewCo
         
         let closeButtonAssets = configuration.closeButtonAssets
         
-        closeButton.setImage(closeButtonAssets.normalAsset, forState: UIControlState.Normal)
-        closeButton.setImage(closeButtonAssets.highlightedAsset, forState: UIControlState.Highlighted)
+        closeButton.setImage(closeButtonAssets.normal, forState: UIControlState.Normal)
+        closeButton.setImage(closeButtonAssets.highlighted, forState: UIControlState.Highlighted)
         closeButton.alpha = 0.0
     }
     
     private func configureGestureRecognizers() {
         
-        doubleTapRecognizer.addTarget(self, action: "scrollViewDidDoubleTap:")
+        doubleTapRecognizer.addTarget(self, action: #selector(ImageViewer.scrollViewDidDoubleTap(_:)))
         doubleTapRecognizer.numberOfTapsRequired = 2
         scrollView.addGestureRecognizer(doubleTapRecognizer)
-        panGestureRecognizer.addTarget(self, action: "scrollViewDidPan:")
-        view.addGestureRecognizer(self.panGestureRecognizer)
+        
+        panGestureRecognizer.addTarget(self, action: #selector(ImageViewer.scrollViewDidPan(_:)))
+        view.addGestureRecognizer(panGestureRecognizer)
     }
     
     private func configureImageView() {
@@ -175,13 +153,9 @@ public final class ImageViewer: UIViewController, UIScrollViewDelegate, UIViewCo
         parentViewFrameInOurCoordinateSystem = CGRectIntegral(applicationWindow!.convertRect(displacedView.bounds, fromView: displacedView))
         
         imageView.frame = parentViewFrameInOurCoordinateSystem
-        imageView.contentMode = UIViewContentMode.ScaleAspectFit
+        imageView.contentMode = .ScaleAspectFit
         view.addSubview(imageView)
-        
-        UIGraphicsBeginImageContextWithOptions(displacedView.bounds.size, true, UIScreen.mainScreen().scale)
-        displacedView.drawViewHierarchyInRect(displacedView.bounds, afterScreenUpdates: false)
-        imageView.image = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
+        imageView.image = screenshotFromView(displacedView)
     }
     
     private func configureScrollView() {
@@ -195,11 +169,11 @@ public final class ImageViewer: UIViewController, UIScrollViewDelegate, UIViewCo
     }
     
     // MARK: - View Lifecycle
+    
     public override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransitionToSize(size, withTransitionCoordinator: coordinator)
         shouldRotate = true
     }
-    
     
     public override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
@@ -237,21 +211,19 @@ public final class ImageViewer: UIViewController, UIScrollViewDelegate, UIViewCo
         view.addSubview(closeButton)
         
         scrollView.delegate = self
-        closeButton.addTarget(self, action: "close:", forControlEvents: .TouchUpInside)
+        closeButton.addTarget(self, action: #selector(ImageViewer.close(_:)), forControlEvents: .TouchUpInside)
     }
     
     public override func viewDidLoad() {
         super.viewDidLoad()
-        
-        isPortraitOnly = presentingViewController!.supportedInterfaceOrientations() == .Portrait ||
-            UIApplication.sharedApplication().supportedInterfaceOrientationsForWindow(nil) == .Portrait
-        
+
         configureCloseButton()
         configureImageView()
         configureScrollView()
     }
 
-    // MARK: UIViewControllerTransitioningDelegate
+    // MARK: - Transitioning Delegate
+    
     public func animationControllerForPresentedController(presented: UIViewController, presentingController presenting: UIViewController, sourceController source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         return presentTransition
     }
@@ -262,7 +234,7 @@ public final class ImageViewer: UIViewController, UIScrollViewDelegate, UIViewCo
     
     // MARK: - Animations
     
-    @IBAction private func close(sender: AnyObject) {
+    func close(sender: AnyObject) {
         presentingViewController?.dismissViewControllerAnimated(true, completion: nil)
     }
     
@@ -274,13 +246,13 @@ public final class ImageViewer: UIViewController, UIScrollViewDelegate, UIViewCo
         
         UIView.animateWithDuration(hideCloseButtonDuration, animations: { self.closeButton.alpha = 0.0 })
         
-        let aspectFitContentSize = self.aspectFitContentSize(forBoundingSize: rotationAdjustedBounds().size, contentSize: displacedView.frame.size)
+        let aspectFitSize = aspectFitContentSize(forBoundingSize: rotationAdjustedBounds().size, contentSize: displacedView.frame.size)
         UIView.animateWithDuration(showDuration, animations: { () -> Void in
-            if self.isPortraitOnly {
-                self.view.transform = self.rotationTransform()
+            if isPortraitOnly() {
+                self.view.transform = rotationTransform()
             }
-            self.view.bounds = self.rotationAdjustedBounds()
-            self.imageView.bounds = CGRect(origin: CGPointZero, size: aspectFitContentSize)
+            self.view.bounds = rotationAdjustedBounds()
+            self.imageView.bounds = CGRect(origin: CGPointZero, size: aspectFitSize)
             self.imageView.center = self.scrollView.center
             self.scrollView.contentSize = self.imageView.bounds.size
             self.scrollView.setZoomScale(1.0, animated: false)
@@ -288,7 +260,7 @@ public final class ImageViewer: UIViewController, UIScrollViewDelegate, UIViewCo
             }) { (finished) -> Void in
                 if (finished) {
                     self.isAnimating = false
-                    self.scrollView.maximumZoomScale = self.maximumZoomScale(forBoundingSize: self.rotationAdjustedBounds().size, contentSize: self.imageView.bounds.size)
+                    self.scrollView.maximumZoomScale = maximumZoomScale(forBoundingSize: rotationAdjustedBounds().size, contentSize: self.imageView.bounds.size)
                     UIView.animateWithDuration(self.showCloseButtonDuration, animations: { self.closeButton.alpha = 1.0 })
                 }
         }
@@ -306,20 +278,20 @@ public final class ImageViewer: UIViewController, UIScrollViewDelegate, UIViewCo
         overlayView.backgroundColor = UIColor.blackColor()
         
         UIView.animateWithDuration(duration, animations: {
-            self.view.transform = self.rotationTransform()
+            self.view.transform = rotationTransform()
             self.overlayView.alpha = 1.0
-            self.view.bounds = self.rotationAdjustedBounds()
-            let aspectFitContentSize = self.aspectFitContentSize(forBoundingSize: self.rotationAdjustedBounds().size, contentSize: self.configuration.imageSize)
-            self.imageView.bounds = CGRect(origin: CGPointZero, size: aspectFitContentSize)
-            self.imageView.center = self.rotationAdjustedCenter()
+            self.view.bounds = rotationAdjustedBounds()
+            let aspectFitSize = aspectFitContentSize(forBoundingSize: rotationAdjustedBounds().size, contentSize: self.configuration.imageSize)
+            self.imageView.bounds = CGRect(origin: CGPointZero, size: aspectFitSize)
+            self.imageView.center = rotationAdjustedCenter(self.view)
             self.scrollView.contentSize = self.imageView.bounds.size
             
             }) { (finished) -> Void in
                 completion?(finished)
                 
                 if finished {
-                    if self.isPortraitOnly {
-                        NSNotificationCenter.defaultCenter().addObserver(self, selector: "rotate", name: UIDeviceOrientationDidChangeNotification, object: nil)
+                    if isPortraitOnly() {
+                        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(ImageViewer.rotate), name: UIDeviceOrientationDidChangeNotification, object: nil)
                     }
                     self.applicationWindow!.windowLevel = UIWindowLevelStatusBar + 1
 
@@ -329,7 +301,7 @@ public final class ImageViewer: UIViewController, UIScrollViewDelegate, UIViewCo
                     }
                     
                     self.isAnimating = false
-                    self.scrollView.maximumZoomScale = self.maximumZoomScale(forBoundingSize: self.rotationAdjustedBounds().size, contentSize: self.imageView.bounds.size)
+                    self.scrollView.maximumZoomScale = maximumZoomScale(forBoundingSize: rotationAdjustedBounds().size, contentSize: self.imageView.bounds.size)
                     UIView.animateWithDuration(self.showCloseButtonDuration, animations: { self.closeButton.alpha = 1.0 })
                     self.configureGestureRecognizers()
                     self.showCompletionBlock?()
@@ -372,11 +344,11 @@ public final class ImageViewer: UIViewController, UIScrollViewDelegate, UIViewCo
     
     func swipeToDismissAnimation(withVerticalTouchPoint verticalTouchPoint: CGFloat,  targetOffset: CGFloat, verticalVelocity: CGFloat, completion: ((Bool) -> Void)?) {
         
-        // in units of "vertical velocity". for example if we have a vertical velocity of 50 per second
-        // and the distance to travel is 175, then our spring velocity is 3.5. I.e. we will travel 3.5 units in 1 second.
+        /// In units of "vertical velocity". for example if we have a vertical velocity of 50 units (which are points really) per second
+        /// and the distance to travel is 175 units, then our spring velocity is 3.5. I.e. we will travel 3.5 units in 1 second.
         let springVelocity = fabs(verticalVelocity / (targetOffset - verticalTouchPoint))
         
-        //how much time it will take to travel the remaining distance given the above speed.
+        /// How much time it will take to travel the remaining distance given the above speed.
         let expectedDuration = NSTimeInterval( fabs(targetOffset - verticalTouchPoint) / fabs(verticalVelocity))
         
         UIView.animateWithDuration(expectedDuration, delay: 0, usingSpringWithDamping: 1.0, initialSpringVelocity: springVelocity, options: UIViewAnimationOptions.CurveLinear, animations: { () -> Void in
@@ -420,7 +392,7 @@ public final class ImageViewer: UIViewController, UIScrollViewDelegate, UIViewCo
         })
     }
     
-    // MARK: - Interaction Handling (UIScrollViewDelegate)
+    // MARK: - Interaction Handling
     
     func scrollViewDidDoubleTap(recognizer: UITapGestureRecognizer) {
         
@@ -430,11 +402,11 @@ public final class ImageViewer: UIViewController, UIScrollViewDelegate, UIViewCo
         
         if (scrollView.zoomScale == 1.0 || scrollView.zoomScale > aspectFillScale) {
             
-            let zoomRect = self.zoomRect(ForScrollView: scrollView, scale: aspectFillScale, center: touchPoint)
+            let zoomingRect = zoomRect(ForScrollView: scrollView, scale: aspectFillScale, center: touchPoint)
             
             UIView.animateWithDuration(zoomDuration, animations: {
                 
-                self.scrollView.zoomToRect(zoomRect, animated: false)
+                self.scrollView.zoomToRect(zoomingRect, animated: false)
             })
         }
         else  {
@@ -470,7 +442,7 @@ public final class ImageViewer: UIViewController, UIScrollViewDelegate, UIViewCo
             
         case .Ended:
             
-            //in points per second
+            /// In points per second
             let verticalVelocity = recognizer.velocityInView(view).y
             
             if verticalVelocity < -thresholdVelocity {
@@ -482,7 +454,6 @@ public final class ImageViewer: UIViewController, UIScrollViewDelegate, UIViewCo
             }
             else {
                 swipeToDismissTransition.setParameters(latestTouchPoint.y, targetOffset: targetOffsetToReachBottom, verticalVelocity: verticalVelocity)
-                presentingViewController?.dismissViewControllerAnimated(true, completion: nil)
             }
             
         default:
@@ -516,92 +487,5 @@ public final class ImageViewer: UIViewController, UIScrollViewDelegate, UIViewCo
             let newY = CGFloat(closeButtonPadding) - abs(scrollView.contentOffset.y / distanceToEdge) * velocityMultiplier
             closeButton.frame = CGRect(origin: CGPoint(x: closeButton.frame.origin.x, y: newY), size: closeButton.frame.size)
         }
-    }
-    
-    // MARK: - Utility
-    
-    private func contentCenter(forBoundingSize boundingSize: CGSize, contentSize: CGSize) -> CGPoint {
-        
-        // When the zoom scale changes i.e. the image is zoomed in or out, the hypothetical center
-        // of content view changes too. But the default Apple implementation is keeping the last center
-        // value which doesn't make much sense. If the image ratio is not matching the screen 
-        // ratio, there will be some empty space horizontaly or verticaly. This needs to be calculated
-        // so that we can get the correct new center value. When these are added, edges of contentView
-        // are aligned in realtime and always aligned with corners of scrollview.
-        
-        let horizontalOffest = (boundingSize.width > contentSize.width) ? ((boundingSize.width - contentSize.width) * 0.5): 0.0
-        let verticalOffset = (boundingSize.height > contentSize.height) ? ((boundingSize.height - contentSize.height) * 0.5): 0.0
-        
-        return CGPoint(x: contentSize.width * 0.5 + horizontalOffest,  y: contentSize.height * 0.5 + verticalOffset)
-    }
-    
-    private func aspectFillZoomScale(forBoundingSize boundingSize: CGSize, contentSize: CGSize) -> CGFloat {
-        
-        let aspectFitContentSize = self.aspectFitContentSize(forBoundingSize: boundingSize, contentSize: contentSize)
-        return (boundingSize.width == aspectFitContentSize.width) ? (boundingSize.height / aspectFitContentSize.height): (boundingSize.width / aspectFitContentSize.width)
-    }
-    
-    private func aspectFitContentSize(forBoundingSize boundingSize: CGSize, contentSize: CGSize) -> CGSize {
-        
-        return AVMakeRectWithAspectRatioInsideRect(contentSize, CGRect(origin: CGPointZero, size: boundingSize)).size
-    }
-    
-    private func maximumZoomScale(forBoundingSize boundingSize: CGSize, contentSize: CGSize) -> CGFloat {
-        
-        //we want to allow the image to always cover 4x the area of screen
-        return min(boundingSize.width, boundingSize.height) / min(contentSize.width, contentSize.height) * 4
-    }
-    
-    private func rotationAdjustedBounds() -> CGRect {
-        guard let window = applicationWindow else { return CGRectZero }
-        guard isPortraitOnly else {
-            return window.bounds
-        }
-        
-        return (UIDevice.currentDevice().orientation.isLandscape) ? CGRect(origin: CGPointZero, size: window.bounds.size.inverted()): window.bounds
-    }
-    
-    private func rotationAdjustedCenter() -> CGPoint {
-        guard isPortraitOnly else {
-            return view.center
-        }
-        
-        return (UIDevice.currentDevice().orientation.isLandscape) ? view.center.inverted() : view.center
-    }
-    
-    private func rotationTransform() -> CGAffineTransform {
-        guard isPortraitOnly else {
-            return CGAffineTransformIdentity
-        }
-        
-        return CGAffineTransformMakeRotation(degreesToRadians(rotationAngleToMatchDeviceOrientation(UIDevice.currentDevice().orientation)))
-    }
-    
-    private func rotationAngleToMatchDeviceOrientation(orientation: UIDeviceOrientation) -> CGFloat {
-        
-        var desiredRotationAngle: CGFloat = 0
-        
-        switch orientation {
-            case .LandscapeLeft:                    desiredRotationAngle = 90
-            case .LandscapeRight:                   desiredRotationAngle = -90
-            case .PortraitUpsideDown:               desiredRotationAngle = 180
-            default:                                desiredRotationAngle = 0
-        }
-        
-        return desiredRotationAngle
-    }
-    
-    private func degreesToRadians(degree: CGFloat) -> CGFloat {
-        return CGFloat(M_PI) * degree / 180
-    }
-    
-    private func zoomRect(ForScrollView scrollView: UIScrollView, scale: CGFloat, center: CGPoint) -> CGRect {
-        
-        let width = scrollView.frame.size.width  / scale
-        let height = scrollView.frame.size.height / scale
-        let originX = center.x - (width / 2.0)
-        let originY = center.y - (height / 2.0)
-        
-        return CGRect(x: originX, y: originY, width: width, height: height)
     }
 }
